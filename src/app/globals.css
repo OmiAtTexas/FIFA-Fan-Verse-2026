@@ -37,7 +37,7 @@
   }
   
   .card-dark-hover {
-    @apply card-dark transition-all hover:border-gold/30 hover:shadow-lg hover:shadow-gold/5;
+    @apply card-dark transition-all;
   }
 
   .btn-primary {
