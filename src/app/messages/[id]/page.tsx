@@ -25,7 +25,6 @@ export default function DMPage({ params }: { params: { id: string } }) {
 
     const s = io(process.env.NEXT_PUBLIC_API_URL?.replace('/api/v1', '') || '', {
       path: '/socket.io',
-      namespace: '/chat',
       query: { clerkId: userId },
     });
 
