@@ -21,6 +21,7 @@ export default function HomePage() {
           'x-user-avatar': user.imageUrl || '',
         },
       }).then(() => setSynced(true));
+      import('@/lib/push-notifications').then(m => m.subscribeToPushNotifications());
     }
   }, [user]);
 
