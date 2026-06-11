@@ -1,17 +1,18 @@
 'use client';
 
-import { useUser } from '@clerk/nextjs';
+import { useUser, useClerk } from '@clerk/nextjs';
 import { useEffect, useState } from 'react';
+import Link from 'next/link';
 import { BottomNav } from '@/components/ui/BottomNav';
 
 export default function HomePage() {
   const { user } = useUser();
+  const { signOut } = useClerk();
   const [matches, setMatches] = useState<any[]>([]);
   const [synced, setSynced] = useState(false);
 
   useEffect(() => {
     if (user && !synced) {
-      // Sync user to database
       fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/sync`, {
         method: 'POST',
         headers: {
@@ -21,88 +22,100 @@ export default function HomePage() {
           'x-user-avatar': user.imageUrl || '',
         },
       }).then(() => setSynced(true));
-      import('@/lib/push-notifications').then(m => m.subscribeToPushNotifications());
     }
-  }, [user]);
+  }, [user, synced]);
 
   useEffect(() => {
     const load = () => {
       fetch(`${process.env.NEXT_PUBLIC_API_URL}/matches`)
         .then(r => r.json())
-        .then(data => setMatches(Array.isArray(data) ? data.slice(0, 3) : []));
+        .then(data => setMatches(Array.isArray(data) ? data.slice(0, 4) : []));
     };
     load();
-    const interval = setInterval(load, 30000);
-    return () => clearInterval(interval);
+    const i = setInterval(load, 30000);
+    return () => clearInterval(i);
   }, []);
 
   return (
-    <div className="min-h-screen bg-black text-white pb-20">
-      <header className="sticky top-0 bg-black border-b border-yellow-900 px-4 py-3 flex items-center justify-between">
+    <div className="min-h-screen bg-black text-white pb-24">
+      <header className="sticky top-0 bg-black/95 backdrop-blur border-b border-yellow-900/50 px-4 py-3 flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-yellow-500 tracking-widest uppercase">FanVerse</h1>
-          <p className="text-xs text-gray-500">FIFA World Cup 2026</p>
+          <h1 className="text-2xl font-black text-yellow-500 tracking-widest">FANVERSE 2026</h1>
+          <p className="text-[10px] text-gray-500 uppercase tracking-wider">FIFA World Cup Companion</p>
         </div>
         <div className="flex items-center gap-2">
-          <span className="flex items-center gap-1 text-xs text-red-500 bg-red-950/30 px-2 py-1 rounded-full">
+          <span className="flex items-center gap-1 text-[10px] text-red-400 bg-red-950/40 border border-red-900/50 px-2 py-1 rounded-full">
             <span className="w-1.5 h-1.5 bg-red-500 rounded-full animate-pulse"/>LIVE
           </span>
-          {user?.imageUrl && <img src={user.imageUrl} alt="" className="w-9 h-9 rounded-full border border-yellow-700" />}
+          {user?.imageUrl && (
+            <button onClick={() => signOut()}>
+              <img src={user.imageUrl} alt="" className="w-9 h-9 rounded-full border-2 border-yellow-700" />
+            </button>
+          )}
         </div>
       </header>
 
-      <main className="px-4 py-6 space-y-6 pb-24">
+      <main className="px-4 py-5 space-y-6">
         <div>
-          <h2 className="text-2xl font-bold">Welcome, <span className="text-yellow-500">{user?.firstName || 'Fan'}</span> 👋</h2>
-          <p className="text-gray-400 mt-1 text-sm">Your World Cup journey starts here</p>
+          <h2 className="text-2xl font-black">Hey <span className="text-yellow-500">{user?.firstName || 'Fan'}</span> 👋</h2>
+          <p className="text-gray-500 text-sm mt-0.5">Welcome to the biggest World Cup ever</p>
         </div>
 
+        {/* Today's Matches */}
         <section>
           <div className="flex items-center justify-between mb-3">
-            <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider">Today's Matches</h3>
-            <a href="/matches" className="text-xs text-yellow-500">See all →</a>
+            <h3 className="text-xs font-bold text-gray-400 uppercase tracking-widest">Today's Matches</h3>
+            <Link href="/matches" className="text-xs text-yellow-500 font-medium">See all →</Link>
           </div>
           <div className="space-y-2">
-            {matches.length === 0 && <p className="text-xs text-gray-600 text-center py-4">Loading matches...</p>}
+            {matches.length === 0 && (
+              <div className="bg-gray-900 border border-gray-800 rounded-2xl p-4 text-center text-gray-600 text-sm">Loading matches...</div>
+            )}
             {matches.map((m: any) => (
-              <div key={m.id} className={`rounded-2xl p-3 border ${m.isLive ? 'border-red-600 bg-red-950/20' : 'border-gray-800 bg-gray-900'}`}>
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2 flex-1">
+              <div key={m.id} className={`rounded-2xl border p-3 ${m.isLive ? 'border-red-700 bg-red-950/20' : m.isCompleted ? 'border-gray-700 bg-gray-900' : 'border-gray-800 bg-gray-900'}`}>
+                {m.isLive && <div className="flex items-center gap-1 mb-2"><span className="w-1.5 h-1.5 bg-red-500 rounded-full animate-pulse"/><span className="text-red-400 text-[10px] font-bold">{m.clock}</span></div>}
+                <div className="flex items-center">
+                  <div className="flex-1 flex items-center gap-2">
                     <img src={m.homeLogo} alt="" className="w-8 h-8 object-contain" />
                     <span className="font-bold text-sm">{m.homeTeamCode}</span>
                   </div>
-                  <div className="text-center px-2">
-                    {m.isLive
-                      ? <span className="text-red-500 font-bold text-lg">{m.homeScore} - {m.awayScore}</span>
-                      : <span className="text-xs text-gray-400">{new Date(m.kickoffAt).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}</span>
+                  <div className="text-center px-3">
+                    {m.isLive || m.isCompleted
+                      ? <span className="text-yellow-500 font-black text-lg">{m.homeScore} - {m.awayScore}</span>
+                      : <span className="text-gray-400 text-xs font-medium">{new Date(m.kickoffAt).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}</span>
                     }
+                    {m.isCompleted && <p className="text-[9px] text-gray-600">FT</p>}
                   </div>
-                  <div className="flex items-center gap-2 flex-1 justify-end">
+                  <div className="flex-1 flex items-center gap-2 justify-end">
                     <span className="font-bold text-sm">{m.awayTeamCode}</span>
                     <img src={m.awayLogo} alt="" className="w-8 h-8 object-contain" />
                   </div>
                 </div>
-                <p className="text-[10px] text-gray-600 text-center mt-1">{m.venue}</p>
+                <p className="text-[9px] text-gray-600 text-center mt-1.5">{m.venue}</p>
               </div>
             ))}
           </div>
         </section>
 
-        <div className="grid grid-cols-2 gap-3">
-          {[
-            { icon: '⚽', label: 'All Matches', href: '/matches' },
-            { icon: '👥', label: 'Find Fans', href: '/fans' },
-            { icon: '💬', label: 'Fan Groups', href: '/groups' },
-            { icon: '🗺️', label: 'AI Guide', href: '/ai' },
-            { icon: '🏅', label: 'My Passport', href: '/passport' },
-            { icon: '📍', label: 'Meetups', href: '/meetups' },
-          ].map(item => (
-            <a key={item.href} href={item.href} className="bg-gray-900 border border-gray-800 rounded-2xl p-4 flex flex-col gap-2 hover:border-yellow-700 transition-all">
-              <span className="text-3xl">{item.icon}</span>
-              <span className="text-sm font-medium">{item.label}</span>
-            </a>
-          ))}
-        </div>
+        {/* Quick Actions */}
+        <section>
+          <h3 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-3">Explore</h3>
+          <div className="grid grid-cols-3 gap-2">
+            {[
+              { emoji: '👥', label: 'Find Fans', href: '/fans' },
+              { emoji: '🫂', label: 'Groups', href: '/groups' },
+              { emoji: '🤖', label: 'AI Guide', href: '/ai' },
+              { emoji: '💬', label: 'Messages', href: '/messages' },
+              { emoji: '🏅', label: 'Passport', href: '/passport' },
+              { emoji: '⚽', label: 'Matches', href: '/matches' },
+            ].map(item => (
+              <Link key={item.href} href={item.href} className="bg-gray-900 border border-gray-800 rounded-2xl p-3 flex flex-col items-center gap-1.5 hover:border-yellow-800 transition-all active:scale-95">
+                <span className="text-2xl">{item.emoji}</span>
+                <span className="text-[11px] font-medium text-gray-300">{item.label}</span>
+              </Link>
+            ))}
+          </div>
+        </section>
       </main>
       <BottomNav />
     </div>
