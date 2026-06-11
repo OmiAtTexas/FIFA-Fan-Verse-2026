@@ -11,8 +11,9 @@ export default function FansPage() {
   const [users, setUsers] = useState<any[]>([]);
   const [search, setSearch] = useState('');
   const [loading, setLoading] = useState(true);
-  const [following, setFollowing] = useState<string[]>([]);
-  const [messaging, setMessaging] = useState<string | null>(null);
+  const [requests, setRequests] = useState<Record<string, string>>({});
+  const [followRequests, setFollowRequests] = useState<any[]>([]);
+  const [tab, setTab] = useState<'discover' | 'requests'>('discover');
 
   const load = async (q?: string) => {
     setLoading(true);
@@ -25,93 +26,134 @@ export default function FansPage() {
     setLoading(false);
   };
 
-  useEffect(() => { if (userId) load(); }, [userId]);
+  const loadRequests = async () => {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users/follow-requests`, {
+      headers: { 'x-user-id': userId || '' }
+    });
+    const data = await res.json();
+    setFollowRequests(Array.isArray(data) ? data : []);
+  };
+
+  useEffect(() => { if (userId) { load(); loadRequests(); } }, [userId]);
   useEffect(() => {
     const t = setTimeout(() => { if (userId) load(search); }, 400);
     return () => clearTimeout(t);
   }, [search]);
 
-  const toggleFollow = async (targetId: string) => {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users/${targetId}/follow`, {
+  const sendFollowRequest = async (targetId: string) => {
+    setRequests(r => ({ ...r, [targetId]: 'pending' }));
+    await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users/${targetId}/follow-request`, {
       method: 'POST',
       headers: { 'x-user-id': userId || '' },
     });
-    const data = await res.json();
-    setFollowing(f => data.following ? [...f, targetId] : f.filter(x => x !== targetId));
   };
 
-  const startChat = async (targetClerkId: string) => {
-    setMessaging(targetClerkId);
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/messages/dm/${targetClerkId}`, {
+  const acceptRequest = async (requestId: string) => {
+    await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users/follow-requests/${requestId}/accept`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'x-user-id': userId || '' },
-      body: JSON.stringify({ content: '👋 Hey!' }),
+      headers: { 'x-user-id': userId || '' },
     });
-    const data = await res.json();
-    setMessaging(null);
-    if (data.conversationId) {
-      router.push(`/messages/${data.conversationId}`);
-    } else {
-      router.push('/messages');
-    }
+    loadRequests();
+  };
+
+  const declineRequest = async (requestId: string) => {
+    await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users/follow-requests/${requestId}/decline`, {
+      method: 'POST',
+      headers: { 'x-user-id': userId || '' },
+    });
+    loadRequests();
   };
 
   return (
-    <div className="min-h-screen bg-black text-white pb-20">
-      <header className="sticky top-0 bg-black border-b border-yellow-900 px-4 py-3">
-        <h1 className="text-2xl font-bold text-yellow-500 tracking-widest uppercase">Find Fans</h1>
-        <input
-          value={search}
-          onChange={e => setSearch(e.target.value)}
-          placeholder="Search by name, country, team..."
-          className="w-full mt-2 bg-gray-900 border border-gray-700 rounded-xl px-4 py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-yellow-600"
-        />
+    <div className="min-h-screen bg-black text-white pb-24">
+      <header className="sticky top-0 bg-black/95 backdrop-blur border-b border-yellow-900/50 px-4 py-3">
+        <h1 className="text-2xl font-black text-yellow-500 tracking-widest uppercase">Find Fans</h1>
+        <div className="flex gap-2 mt-2">
+          <button onClick={() => setTab('discover')} className={`flex-1 py-1.5 rounded-xl text-xs font-bold transition-all ${tab === 'discover' ? 'bg-yellow-500 text-black' : 'bg-gray-900 text-gray-400'}`}>
+            Discover
+          </button>
+          <button onClick={() => { setTab('requests'); loadRequests(); }} className={`flex-1 py-1.5 rounded-xl text-xs font-bold transition-all relative ${tab === 'requests' ? 'bg-yellow-500 text-black' : 'bg-gray-900 text-gray-400'}`}>
+            Requests {followRequests.length > 0 && <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full text-[9px] text-white flex items-center justify-center">{followRequests.length}</span>}
+          </button>
+        </div>
+        {tab === 'discover' && (
+          <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search by name, country, team..." className="w-full mt-2 bg-gray-900 border border-gray-700 rounded-xl px-4 py-2.5 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-yellow-600" />
+        )}
       </header>
 
       <main className="px-4 py-4 space-y-3">
-        {!search && <p className="text-xs text-gray-500 uppercase tracking-widest font-bold mb-2">Suggested Fans</p>}
-        {loading && <p className="text-center text-gray-500 py-8 animate-pulse">Finding fans...</p>}
-        {!loading && users.length === 0 && (
-          <div className="text-center py-12">
-            <p className="text-4xl mb-3">🔍</p>
-            <p className="text-gray-400">No fans found.</p>
-          </div>
-        )}
-        {users.map(u => (
-          <div key={u.id} className="bg-gray-900 border border-gray-800 rounded-2xl p-4">
-            <div className="flex items-center gap-3">
-              <div className="w-12 h-12 rounded-full bg-yellow-900 flex items-center justify-center overflow-hidden flex-shrink-0">
-                {u.avatarUrl
-                  ? <img src={u.avatarUrl} alt="" className="w-full h-full object-cover" />
-                  : <span className="text-yellow-500 font-bold text-lg">{u.displayName?.[0] || '?'}</span>
-                }
+        {tab === 'requests' && (
+          <>
+            {followRequests.length === 0 && (
+              <div className="text-center py-12">
+                <p className="text-4xl mb-3">🔔</p>
+                <p className="text-gray-400 font-medium">No pending requests</p>
               </div>
-              <div className="flex-1 min-w-0">
-                <p className="font-bold text-sm truncate">{u.displayName || u.username}</p>
-                <div className="flex items-center gap-2 mt-0.5">
-                  {u.nationality && <span className="text-xs text-gray-400">🌍 {u.nationality}</span>}
-                  {u.supportedTeam && <span className="text-xs text-gray-400">⚽ {u.supportedTeam}</span>}
+            )}
+            {followRequests.map((req: any) => (
+              <div key={req.id} className="bg-gray-900 border border-gray-800 rounded-2xl p-4">
+                <div className="flex items-center gap-3 mb-3">
+                  <div className="w-12 h-12 rounded-full bg-yellow-900 flex items-center justify-center overflow-hidden flex-shrink-0">
+                    {req.from?.avatarUrl
+                      ? <img src={req.from.avatarUrl} alt="" className="w-full h-full object-cover" />
+                      : <span className="text-yellow-500 font-bold text-lg">{req.from?.displayName?.[0] || '?'}</span>
+                    }
+                  </div>
+                  <div className="flex-1">
+                    <p className="font-bold text-sm">{req.from?.displayName}</p>
+                    <div className="flex gap-2 mt-0.5">
+                      {req.from?.nationality && <span className="text-xs text-gray-400">🌍 {req.from.nationality}</span>}
+                      {req.from?.supportedTeam && <span className="text-xs text-gray-400">⚽ {req.from.supportedTeam}</span>}
+                    </div>
+                  </div>
                 </div>
-                {u.bio && <p className="text-xs text-gray-500 mt-1 truncate">{u.bio}</p>}
+                <div className="flex gap-2">
+                  <button onClick={() => acceptRequest(req.id)} className="flex-1 bg-yellow-500 text-black font-bold py-2.5 rounded-xl text-sm">Accept</button>
+                  <button onClick={() => declineRequest(req.id)} className="flex-1 bg-gray-800 text-gray-300 font-bold py-2.5 rounded-xl text-sm">Decline</button>
+                </div>
               </div>
-            </div>
-            <div className="flex gap-2 mt-3">
-              <button
-                onClick={() => toggleFollow(u.id)}
-                className={`flex-1 py-2 rounded-xl text-xs font-bold transition-all ${following.includes(u.id) ? 'bg-gray-700 text-gray-300' : 'bg-yellow-500 text-black'}`}
-              >
-                {following.includes(u.id) ? '✓ Following' : '+ Follow'}
-              </button>
-              <button
-                onClick={() => startChat(u.clerkId)}
-                disabled={messaging === u.clerkId}
-                className="flex-1 py-2 rounded-xl text-xs font-bold bg-gray-800 border border-gray-700 text-white disabled:opacity-50"
-              >
-                {messaging === u.clerkId ? '...' : '💬 Message'}
-              </button>
-            </div>
-          </div>
-        ))}
+            ))}
+          </>
+        )}
+
+        {tab === 'discover' && (
+          <>
+            {!search && <p className="text-[10px] text-gray-600 uppercase tracking-widest font-bold">Suggested Fans</p>}
+            {loading && <p className="text-center text-gray-500 py-8 animate-pulse">Finding fans...</p>}
+            {!loading && users.length === 0 && (
+              <div className="text-center py-12">
+                <p className="text-4xl mb-3">🔍</p>
+                <p className="text-gray-400">No fans found.</p>
+              </div>
+            )}
+            {users.map(u => (
+              <div key={u.id} className="bg-gray-900 border border-gray-800 rounded-2xl p-4 flex items-center gap-3">
+                <div className="w-14 h-14 rounded-full bg-yellow-900/30 border border-yellow-900/50 flex items-center justify-center overflow-hidden flex-shrink-0">
+                  {u.avatarUrl
+                    ? <img src={u.avatarUrl} alt="" className="w-full h-full object-cover" />
+                    : <span className="text-yellow-500 font-bold text-xl">{u.displayName?.[0] || '?'}</span>
+                  }
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="font-bold text-sm truncate">{u.displayName || u.username}</p>
+                  <div className="flex items-center gap-2 mt-0.5 flex-wrap">
+                    {u.nationality && <span className="text-xs text-gray-400">🌍 {u.nationality}</span>}
+                    {u.supportedTeam && <span className="text-xs text-yellow-600">⚽ {u.supportedTeam}</span>}
+                  </div>
+                  {u.bio && <p className="text-xs text-gray-500 mt-1 truncate">{u.bio}</p>}
+                  <p className="text-[10px] text-gray-600 mt-1">{u._count?.followers || 0} followers · {u._count?.following || 0} following</p>
+                </div>
+                <button
+                  onClick={() => sendFollowRequest(u.id)}
+                  disabled={requests[u.id] === 'pending'}
+                  className={`flex-shrink-0 px-4 py-2 rounded-xl text-xs font-bold transition-all ${requests[u.id] === 'pending' ? 'bg-gray-700 text-gray-400' : 'bg-yellow-500 text-black'}`}
+                >
+                  {requests[u.id] === 'pending' ? 'Requested' : '+ Follow'}
+                </button>
+              </div>
+            ))}
+          </>
+        )}
       </main>
       <BottomNav />
     </div>
