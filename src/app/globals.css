@@ -2,20 +2,42 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --wc-gold: #C9A227;
-  --wc-red: #C1272D;
-  --wc-green: #006341;
-  --background: #0D0D0D;
-  --surface: #1A1A1A;
-  --surface-alt: #242424;
-  --border: #2E2E2E;
-  --foreground: #F5F5F5;
-  --muted: #888888;
-}
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700;800;900&display=swap');
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
 
 body {
-  background-color: var(--background);
-  color: var(--foreground);
-  font-family: var(--font-body), sans-serif;
+  background-color: #0d0d0d;
+  color: #ffffff;
+  font-family: 'Inter', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  overscroll-behavior: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar { display: none; }
+.scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+
+.fifa-title { font-family: 'Bebas Neue', sans-serif; }
+
+.card-dark {
+  background: #111111;
+  border: 1px solid #222222;
+  border-radius: 16px;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #e63946, #ff6b35);
+  color: white;
+  font-weight: 800;
+  border-radius: 12px;
+}
+
+.live-badge {
+  background: #e63946;
+  color: white;
+  font-size: 10px;
+  font-weight: 800;
+  padding: 2px 8px;
+  border-radius: 99px;
+  animation: pulse 2s infinite;
 }
