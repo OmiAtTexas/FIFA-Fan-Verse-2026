@@ -23,12 +23,12 @@ export default function AiPage() {
   const bottomRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const saved = sessionStorage.getItem('ai-chat');
+    const saved = localStorage.getItem('ai-chat');
     if (saved) setMessages(JSON.parse(saved));
   }, []);
 
   useEffect(() => {
-    sessionStorage.setItem('ai-chat', JSON.stringify(messages));
+    localStorage.setItem('ai-chat', JSON.stringify(messages));
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
@@ -55,7 +55,7 @@ export default function AiPage() {
 
   const clear = () => {
     setMessages([DEFAULT_MSG]);
-    sessionStorage.removeItem('ai-chat');
+    localStorage.removeItem('ai-chat');
   };
 
   return (
