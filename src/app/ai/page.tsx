@@ -15,7 +15,7 @@ const QUICK = [
 ];
 
 export default function AiPage() {
-  const [messages, setMessages] = useState([
+  const [messages, setMessages] = useState<{ role: string; content: string }[]>([
     { role: 'assistant', content: "Hey! I'm your FIFA World Cup 2026 AI guide 🌍⚽ Ask me anything about host cities, travel, food, transport, or match day tips!" }
   ]);
   const [input, setInput] = useState('');
@@ -26,14 +26,16 @@ export default function AiPage() {
 
   const send = async (text: string) => {
     if (!text.trim() || loading) return;
+    const userMsg = { role: 'user', content: text.trim() };
     setInput('');
-    setMessages(m => [...m, { role: 'user', content: text.trim() }]);
+    setMessages(m => [...m, userMsg]);
     setLoading(true);
     try {
+      const history = messages.filter(m => m.role !== 'assistant' || messages.indexOf(m) > 0);
       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/ai/chat`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: text.trim() }),
+        body: JSON.stringify({ message: text.trim(), history }),
       });
       const data = await res.json();
       setMessages(m => [...m, { role: 'assistant', content: data.reply || 'Sorry, try again!' }]);
@@ -45,16 +47,19 @@ export default function AiPage() {
 
   return (
     <div className="flex flex-col h-screen bg-black text-white">
-      <header className="sticky top-0 bg-black/95 backdrop-blur border-b border-yellow-900/50 px-4 py-3">
-        <h1 className="text-2xl font-black text-yellow-500 tracking-widest">AI GUIDE</h1>
-        <p className="text-[10px] text-gray-500 uppercase tracking-wider">World Cup 2026 Companion</p>
+      <header className="sticky top-0 bg-black/95 backdrop-blur border-b border-yellow-900/50 px-4 py-3 flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-black text-yellow-500 tracking-widest">AI GUIDE</h1>
+          <p className="text-[10px] text-gray-500 uppercase tracking-wider">World Cup 2026 Companion</p>
+        </div>
+        <button onClick={() => setMessages([{ role: 'assistant', content: "Hey! I'm your FIFA World Cup 2026 AI guide 🌍⚽ Ask me anything!" }])} className="text-xs text-gray-500 border border-gray-700 px-3 py-1.5 rounded-xl">Clear</button>
       </header>
 
       <div className="flex-1 overflow-y-auto px-4 py-4 space-y-3 pb-44">
         {messages.map((m, i) => (
           <div key={i} className={`flex ${m.role === 'user' ? 'justify-end' : 'justify-start'}`}>
             {m.role === 'assistant' && (
-              <div className="w-8 h-8 rounded-full bg-yellow-500 flex items-center justify-center text-black font-black text-sm mr-2 flex-shrink-0 mt-1">🤖</div>
+              <div className="w-8 h-8 rounded-full bg-yellow-500 flex items-center justify-center text-black text-sm mr-2 flex-shrink-0 mt-1">🤖</div>
             )}
             <div className={`max-w-[80%] px-4 py-3 rounded-2xl text-sm leading-relaxed ${m.role === 'user' ? 'bg-yellow-500 text-black font-medium rounded-br-sm' : 'bg-gray-900 border border-gray-800 text-white rounded-bl-sm'}`}>
               {m.content}
@@ -63,7 +68,7 @@ export default function AiPage() {
         ))}
         {loading && (
           <div className="flex justify-start">
-            <div className="w-8 h-8 rounded-full bg-yellow-500 flex items-center justify-center text-black font-black text-sm mr-2 flex-shrink-0">🤖</div>
+            <div className="w-8 h-8 rounded-full bg-yellow-500 flex items-center justify-center text-black text-sm mr-2 flex-shrink-0">🤖</div>
             <div className="bg-gray-900 border border-gray-800 rounded-2xl px-4 py-3 flex gap-1 items-center">
               {[0,1,2].map(i => <span key={i} className="w-2 h-2 bg-yellow-500 rounded-full animate-bounce" style={{ animationDelay: `${i*150}ms` }}/>)}
             </div>
@@ -75,19 +80,11 @@ export default function AiPage() {
       <div className="fixed bottom-16 left-0 right-0 bg-black/95 border-t border-gray-800 px-4 py-3 space-y-2">
         <div className="flex gap-2 overflow-x-auto scrollbar-hide pb-1">
           {QUICK.map(q => (
-            <button key={q} onClick={() => send(q)} className="flex-shrink-0 text-xs bg-gray-900 border border-gray-700 rounded-full px-3 py-1.5 text-gray-300 whitespace-nowrap hover:border-yellow-600 transition-all">
-              {q}
-            </button>
+            <button key={q} onClick={() => send(q)} className="flex-shrink-0 text-xs bg-gray-900 border border-gray-700 rounded-full px-3 py-1.5 text-gray-300 whitespace-nowrap hover:border-yellow-600 transition-all">{q}</button>
           ))}
         </div>
         <div className="flex gap-2">
-          <input
-            value={input}
-            onChange={e => setInput(e.target.value)}
-            onKeyDown={e => e.key === 'Enter' && send(input)}
-            placeholder="Ask anything about World Cup 2026..."
-            className="flex-1 bg-gray-900 border border-gray-700 rounded-xl px-4 py-3 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-yellow-600"
-          />
+          <input value={input} onChange={e => setInput(e.target.value)} onKeyDown={e => e.key === 'Enter' && send(input)} placeholder="Ask anything about World Cup 2026..." className="flex-1 bg-gray-900 border border-gray-700 rounded-xl px-4 py-3 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-yellow-600" />
           <button onClick={() => send(input)} disabled={!input.trim() || loading} className="bg-yellow-500 text-black font-black px-5 rounded-xl text-lg disabled:opacity-50">→</button>
         </div>
       </div>
