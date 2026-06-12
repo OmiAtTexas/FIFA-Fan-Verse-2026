@@ -14,24 +14,32 @@ const QUICK = [
   '🍺 Best fan zones in Los Angeles',
 ];
 
+const DEFAULT_MSG = { role: 'assistant', content: "Hey! I'm your FIFA World Cup 2026 AI guide 🌍⚽ Ask me anything about host cities, travel, food, transport, or match day tips!" };
+
 export default function AiPage() {
-  const [messages, setMessages] = useState<{ role: string; content: string }[]>([
-    { role: 'assistant', content: "Hey! I'm your FIFA World Cup 2026 AI guide 🌍⚽ Ask me anything about host cities, travel, food, transport, or match day tips!" }
-  ]);
+  const [messages, setMessages] = useState<{ role: string; content: string }[]>([DEFAULT_MSG]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => { bottomRef.current?.scrollIntoView({ behavior: 'smooth' }); }, [messages]);
+  useEffect(() => {
+    const saved = sessionStorage.getItem('ai-chat');
+    if (saved) setMessages(JSON.parse(saved));
+  }, []);
+
+  useEffect(() => {
+    sessionStorage.setItem('ai-chat', JSON.stringify(messages));
+    bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages]);
 
   const send = async (text: string) => {
     if (!text.trim() || loading) return;
-    const userMsg = { role: 'user', content: text.trim() };
     setInput('');
-    setMessages(m => [...m, userMsg]);
+    const newMessages = [...messages, { role: 'user', content: text.trim() }];
+    setMessages(newMessages);
     setLoading(true);
     try {
-      const history = messages.filter(m => m.role !== 'assistant' || messages.indexOf(m) > 0);
+      const history = newMessages.slice(1).slice(-10);
       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/ai/chat`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -45,6 +53,11 @@ export default function AiPage() {
     setLoading(false);
   };
 
+  const clear = () => {
+    setMessages([DEFAULT_MSG]);
+    sessionStorage.removeItem('ai-chat');
+  };
+
   return (
     <div className="flex flex-col h-screen bg-black text-white">
       <header className="sticky top-0 bg-black/95 backdrop-blur border-b border-yellow-900/50 px-4 py-3 flex items-center justify-between">
@@ -52,7 +65,7 @@ export default function AiPage() {
           <h1 className="text-2xl font-black text-yellow-500 tracking-widest">AI GUIDE</h1>
           <p className="text-[10px] text-gray-500 uppercase tracking-wider">World Cup 2026 Companion</p>
         </div>
-        <button onClick={() => setMessages([{ role: 'assistant', content: "Hey! I'm your FIFA World Cup 2026 AI guide 🌍⚽ Ask me anything!" }])} className="text-xs text-gray-500 border border-gray-700 px-3 py-1.5 rounded-xl">Clear</button>
+        <button onClick={clear} className="text-xs text-gray-500 border border-gray-700 px-3 py-1.5 rounded-xl">Clear</button>
       </header>
 
       <div className="flex-1 overflow-y-auto px-4 py-4 space-y-3 pb-44">
