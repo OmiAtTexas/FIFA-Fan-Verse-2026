@@ -70,8 +70,8 @@ export default function SignInPage() {
         <div style={{ textAlign: 'center', marginBottom: 32 }}>
           {/* Trophy with glow */}
           <div style={{ position: 'relative', display: 'inline-block', marginBottom: 16 }}>
-            <div style={{ fontSize: 90, lineHeight: 1, filter: 'drop-shadow(0 0 20px rgba(201,162,39,0.8)) drop-shadow(0 0 40px rgba(201,162,39,0.4))' }}>🏆</div>
-            <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(circle, rgba(201,162,39,0.2) 0%, transparent 70%)', borderRadius: '50%' }}/>
+            <img src="/trophy.png" alt="World Cup Trophy" style={{ height: 140, objectFit: 'contain', filter: 'drop-shadow(0 0 30px rgba(201,162,39,0.9)) drop-shadow(0 0 60px rgba(201,162,39,0.4))' }} />
+            <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(circle, rgba(201,162,39,0.15) 0%, transparent 70%)', borderRadius: '50%', pointerEvents: 'none' }}/>
           </div>
 
           {/* FIFA 2026 style text */}
