@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
+import { useAuth } from '@clerk/nextjs';
 import { BottomNav } from '@/components/ui/BottomNav';
 
 const QUICK = [
@@ -17,20 +18,26 @@ const QUICK = [
 const DEFAULT_MSG = { role: 'assistant', content: "Hey! I'm your FIFA World Cup 2026 AI guide 🌍⚽ Ask me anything about host cities, travel, food, transport, or match day tips!" };
 
 export default function AiPage() {
+  const { userId } = useAuth();
   const [messages, setMessages] = useState<{ role: string; content: string }[]>([DEFAULT_MSG]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
+  const [loadingHistory, setLoadingHistory] = useState(true);
   const bottomRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const saved = localStorage.getItem('ai-chat');
-    if (saved) setMessages(JSON.parse(saved));
-  }, []);
+    if (!userId) return;
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}/ai/history`, {
+      headers: { 'x-user-id': userId }
+    }).then(r => r.json()).then(data => {
+      if (Array.isArray(data) && data.length > 0) {
+        setMessages([DEFAULT_MSG, ...data.map((m: any) => ({ role: m.role, content: m.content }))]);
+      }
+      setLoadingHistory(false);
+    }).catch(() => setLoadingHistory(false));
+  }, [userId]);
 
-  useEffect(() => {
-    localStorage.setItem('ai-chat', JSON.stringify(messages));
-    bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages]);
+  useEffect(() => { bottomRef.current?.scrollIntoView({ behavior: 'smooth' }); }, [messages]);
 
   const send = async (text: string) => {
     if (!text.trim() || loading) return;
@@ -42,7 +49,7 @@ export default function AiPage() {
       const history = newMessages.slice(1).slice(-10);
       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/ai/chat`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', 'x-user-id': userId || '' },
         body: JSON.stringify({ message: text.trim(), history }),
       });
       const data = await res.json();
@@ -53,9 +60,14 @@ export default function AiPage() {
     setLoading(false);
   };
 
-  const clear = () => {
+  const clear = async () => {
     setMessages([DEFAULT_MSG]);
-    localStorage.removeItem('ai-chat');
+    if (userId) {
+      await fetch(`${process.env.NEXT_PUBLIC_API_URL}/ai/history`, {
+        method: 'DELETE',
+        headers: { 'x-user-id': userId }
+      });
+    }
   };
 
   return (
@@ -69,6 +81,7 @@ export default function AiPage() {
       </header>
 
       <div className="flex-1 overflow-y-auto px-4 py-4 space-y-3 pb-44">
+        {loadingHistory && <p className="text-center text-gray-600 text-xs animate-pulse py-4">Loading your chat history...</p>}
         {messages.map((m, i) => (
           <div key={i} className={`flex ${m.role === 'user' ? 'justify-end' : 'justify-start'}`}>
             {m.role === 'assistant' && (
