@@ -48,9 +48,9 @@ export default function HomePage() {
             <span className="w-1.5 h-1.5 bg-red-500 rounded-full animate-pulse"/>LIVE
           </span>
           {user?.imageUrl && (
-            <button onClick={() => signOut()}>
+            <a href="/profile">
               <img src={user.imageUrl} alt="" className="w-9 h-9 rounded-full border-2 border-yellow-700" />
-            </button>
+            </a>
           )}
         </div>
       </header>
