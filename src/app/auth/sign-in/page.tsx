@@ -56,37 +56,20 @@ export default function SignInPage() {
   return (
     <div style={{ minHeight: '100vh', background: '#020F2A', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '24px', position: 'relative', overflow: 'hidden' }}>
 
-      {/* Animated background blobs */}
       <div style={{ position: 'absolute', top: -150, left: -150, width: 500, height: 500, borderRadius: '50%', background: 'radial-gradient(circle, rgba(232,0,61,0.12) 0%, transparent 70%)', pointerEvents: 'none' }}/>
       <div style={{ position: 'absolute', bottom: -200, right: -150, width: 600, height: 600, borderRadius: '50%', background: 'radial-gradient(circle, rgba(123,47,255,0.1) 0%, transparent 70%)', pointerEvents: 'none' }}/>
-      <div style={{ position: 'absolute', top: '40%', right: -100, width: 400, height: 400, borderRadius: '50%', background: 'radial-gradient(circle, rgba(0,194,168,0.07) 0%, transparent 70%)', pointerEvents: 'none' }}/>
-
-      {/* Grid pattern overlay */}
       <div style={{ position: 'absolute', inset: 0, backgroundImage: 'linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px)', backgroundSize: '50px 50px', pointerEvents: 'none' }}/>
 
       <div style={{ maxWidth: 400, width: '100%', zIndex: 1 }}>
 
-        {/* Logo section */}
-        <div style={{ textAlign: 'center', marginBottom: 32 }}>
-          {/* Trophy with glow */}
-          <div style={{ position: 'relative', display: 'inline-block', marginBottom: 16 }}>
-            <img src="/trophy.png" alt="World Cup Trophy" style={{ height: 140, objectFit: 'contain', filter: 'drop-shadow(0 0 30px rgba(201,162,39,0.9)) drop-shadow(0 0 60px rgba(201,162,39,0.4))' }} />
-            <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(circle, rgba(201,162,39,0.15) 0%, transparent 70%)', borderRadius: '50%', pointerEvents: 'none' }}/>
+        {/* Trophy + Logo */}
+        <div style={{ textAlign: 'center', marginBottom: 28 }}>
+          <div style={{ position: 'relative', display: 'inline-block', marginBottom: 12 }}>
+            <img src="/trophy.png" alt="World Cup Trophy" style={{ height: 130, objectFit: 'contain', filter: 'drop-shadow(0 0 30px rgba(201,162,39,0.9)) drop-shadow(0 0 60px rgba(201,162,39,0.4))' }} />
           </div>
-
-          {/* FIFA 2026 style text */}
-          <div style={{ position: 'relative' }}>
-            <h1 style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: 56, letterSpacing: 6, lineHeight: 1, background: 'linear-gradient(135deg, #e8003d 0%, #ff5c1a 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>FANVERSE</h1>
-            <p style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: 36, letterSpacing: 8, lineHeight: 1, background: 'linear-gradient(135deg, #c9a227 0%, #f0c84a 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text', marginTop: -4 }}>2026</p>
-          </div>
-
-          <p style={{ color: 'rgba(255,255,255,0.35)', fontSize: 11, marginTop: 10, fontWeight: 600, letterSpacing: 3, textTransform: 'uppercase' }}>Your World Cup Companion</p>
-
-          <div style={{ display: 'flex', justifyContent: 'center', gap: 20, marginTop: 14 }}>
-            {['🇺🇸 USA', '🇨🇦 Canada', '🇲🇽 Mexico'].map(c => (
-              <span key={c} style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)', fontWeight: 600 }}>{c}</span>
-            ))}
-          </div>
+          <h1 style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: 52, letterSpacing: 6, lineHeight: 1, background: 'linear-gradient(135deg, #e8003d 0%, #ff5c1a 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>FANVERSE</h1>
+          <p style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: 32, letterSpacing: 8, lineHeight: 1, background: 'linear-gradient(135deg, #c9a227 0%, #f0c84a 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text', marginTop: -2 }}>2026</p>
+          <p style={{ color: 'rgba(255,255,255,0.3)', fontSize: 10, marginTop: 8, fontWeight: 600, letterSpacing: 3 }}>YOUR WORLD CUP COMPANION · 🇺🇸 🇨🇦 🇲🇽</p>
         </div>
 
         {/* Card */}
@@ -107,8 +90,8 @@ export default function SignInPage() {
 
           {step === 'email' && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-              <input value={email} onChange={e => setEmail(e.target.value)} onKeyDown={e => e.key === 'Enter' && handleEmail()} type="email" placeholder="Email address" style={{ padding: '12px 16px', borderRadius: 12, border: '1px solid rgba(255,255,255,0.1)', background: 'rgba(255,255,255,0.06)', color: 'white', fontSize: 14, outline: 'none', fontFamily: 'Inter, sans-serif', transition: 'border-color 0.2s' }} />
-              <button onClick={handleEmail} disabled={loading || !email} style={{ padding: '13px', borderRadius: 12, border: 'none', background: 'linear-gradient(135deg, #e8003d, #ff5c1a)', color: 'white', fontWeight: 800, fontSize: 14, cursor: 'pointer', opacity: !email || loading ? 0.6 : 1, transition: 'all 0.2s' }}>
+              <input value={email} onChange={e => setEmail(e.target.value)} onKeyDown={e => e.key === 'Enter' && handleEmail()} type="email" placeholder="Email address" style={{ padding: '12px 16px', borderRadius: 12, border: '1px solid rgba(255,255,255,0.1)', background: 'rgba(255,255,255,0.06)', color: 'white', fontSize: 14, outline: 'none', fontFamily: 'Inter, sans-serif' }} />
+              <button onClick={handleEmail} disabled={loading || !email} style={{ padding: '13px', borderRadius: 12, border: 'none', background: 'linear-gradient(135deg, #e8003d, #ff5c1a)', color: 'white', fontWeight: 800, fontSize: 14, cursor: 'pointer', opacity: !email || loading ? 0.6 : 1 }}>
                 {loading ? 'Sending code...' : 'Continue with Email →'}
               </button>
               <p style={{ textAlign: 'center', fontSize: 11, color: 'rgba(255,255,255,0.25)' }}>No account? We'll create one automatically.</p>
@@ -117,7 +100,7 @@ export default function SignInPage() {
 
           {step === 'verify' && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-              <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.5)', textAlign: 'center' }}>We sent a 6-digit code to<br/><strong style={{ color: 'white' }}>{email}</strong></p>
+              <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.5)', textAlign: 'center' }}>Code sent to <strong style={{ color: 'white' }}>{email}</strong></p>
               <input value={code} onChange={e => setCode(e.target.value)} onKeyDown={e => e.key === 'Enter' && handleVerify()} type="text" placeholder="000000" maxLength={6} style={{ padding: '14px 16px', borderRadius: 12, border: '1px solid rgba(255,255,255,0.15)', background: 'rgba(255,255,255,0.06)', color: 'white', fontSize: 24, outline: 'none', textAlign: 'center', letterSpacing: 10, fontFamily: 'Inter, sans-serif', fontWeight: 800 }} />
               <button onClick={handleVerify} disabled={loading || code.length < 6} style={{ padding: '13px', borderRadius: 12, border: 'none', background: 'linear-gradient(135deg, #e8003d, #ff5c1a)', color: 'white', fontWeight: 800, fontSize: 14, cursor: 'pointer', opacity: code.length < 6 || loading ? 0.6 : 1 }}>
                 {loading ? 'Verifying...' : 'Verify & Enter →'}
@@ -127,16 +110,6 @@ export default function SignInPage() {
           )}
 
           {error && <p style={{ color: '#e8003d', fontSize: 12, textAlign: 'center', marginTop: 10, fontWeight: 600 }}>{error}</p>}
-        </div>
-
-        {/* Features */}
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginTop: 16 }}>
-          {[{ icon: '⚽', text: 'Live Scores' }, { icon: '👥', text: 'Find Fans' }, { icon: '🤖', text: 'AI Guide' }, { icon: '💬', text: 'Group Chat' }].map(f => (
-            <div key={f.text} style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 12, padding: '10px 14px', display: 'flex', alignItems: 'center', gap: 8 }}>
-              <span style={{ fontSize: 18 }}>{f.icon}</span>
-              <span style={{ fontSize: 12, fontWeight: 600, color: 'rgba(255,255,255,0.4)' }}>{f.text}</span>
-            </div>
-          ))}
         </div>
       </div>
     </div>
