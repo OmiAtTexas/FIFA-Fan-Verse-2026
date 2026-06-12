@@ -5,6 +5,8 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { BottomNav } from '@/components/ui/BottomNav';
 
+const ACCENT_COLORS = ['#e8003d','#7b2fff','#00c2a8','#ff5c1a','#ffd700','#00e676'];
+
 export default function HomePage() {
   const { user } = useUser();
   const [matches, setMatches] = useState<any[]>([]);
@@ -35,99 +37,101 @@ export default function HomePage() {
     return () => clearInterval(i);
   }, []);
 
-  const colors = ['#e63946','#ff6b35','#2ec4b6','#8338ec','#06d6a0','#ffbe0b'];
-
   return (
-    <div className="min-h-screen pb-24" style={{ background: '#0d0d0d' }}>
-      {/* Header */}
-      <header className="sticky top-0 z-40 px-4 py-3 flex items-center justify-between" style={{ background: '#0d0d0d', borderBottom: '1px solid #1a1a1a' }}>
-        <div>
-          <h1 className="fifa-title text-3xl" style={{ color: '#e63946', letterSpacing: 2 }}>FANVERSE 26</h1>
-          <p style={{ fontSize: 9, color: '#666', letterSpacing: 3, textTransform: 'uppercase' }}>FIFA World Cup Companion</p>
-        </div>
-        <div className="flex items-center gap-2">
-          <span className="live-badge flex items-center gap-1">
-            <span style={{ width: 6, height: 6, background: 'white', borderRadius: '50%', display: 'inline-block', animation: 'pulse 1s infinite' }}/>
-            LIVE
-          </span>
-          <Link href="/profile">
-            {user?.imageUrl
-              ? <img src={user.imageUrl} alt="" style={{ width: 36, height: 36, borderRadius: '50%', border: '2px solid #e63946' }} />
-              : <div style={{ width: 36, height: 36, borderRadius: '50%', background: '#e63946', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 900, fontSize: 16 }}>{user?.firstName?.[0] || '?'}</div>
-            }
-          </Link>
+    <div className="page" style={{ background: 'var(--bg)' }}>
+      <header className="header">
+        <div className="header-inner flex items-center justify-between">
+          <div>
+            <h1 className="fifa-font" style={{ fontSize: 28, color: '#e8003d', lineHeight: 1 }}>FANVERSE 26</h1>
+            <p style={{ fontSize: 9, color: 'var(--gray)', letterSpacing: 3, textTransform: 'uppercase' }}>FIFA World Cup Companion</p>
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="live-badge"><span className="pulse-dot" style={{ width: 6, height: 6, background: 'white', borderRadius: '50%', display: 'inline-block' }}/>LIVE</span>
+            <Link href="/profile">
+              {user?.imageUrl
+                ? <img src={user.imageUrl} alt="" style={{ width: 36, height: 36, borderRadius: '50%', border: '2px solid #e8003d' }} />
+                : <div style={{ width: 36, height: 36, borderRadius: '50%', background: '#e8003d', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 900, fontSize: 16 }}>{user?.firstName?.[0] || '?'}</div>
+              }
+            </Link>
+          </div>
         </div>
       </header>
 
-      <main className="px-4 py-5 space-y-6">
-        {/* Welcome */}
-        <div style={{ padding: '20px', borderRadius: 20, background: 'linear-gradient(135deg, #e63946 0%, #8338ec 100%)', position: 'relative', overflow: 'hidden' }}>
-          <div style={{ position: 'absolute', top: -20, right: -20, width: 120, height: 120, borderRadius: '50%', background: 'rgba(255,255,255,0.1)' }}/>
-          <div style={{ position: 'absolute', bottom: -30, right: 20, width: 80, height: 80, borderRadius: '50%', background: 'rgba(255,255,255,0.05)' }}/>
-          <p style={{ fontSize: 13, opacity: 0.8, marginBottom: 4 }}>Welcome back,</p>
-          <h2 style={{ fontSize: 28, fontWeight: 900, lineHeight: 1 }}>{user?.firstName || 'Fan'} 👋</h2>
-          <p style={{ fontSize: 12, opacity: 0.7, marginTop: 6 }}>The World Cup has started! 🔥</p>
+      <main style={{ maxWidth: 480, margin: '0 auto', padding: '20px 16px' }}>
+        {/* Hero */}
+        <div className="animate-slide-up" style={{ padding: '24px 20px', borderRadius: 22, background: 'linear-gradient(135deg, #e8003d 0%, #7b2fff 100%)', marginBottom: 24, position: 'relative', overflow: 'hidden' }}>
+          <div style={{ position: 'absolute', top: -30, right: -30, width: 140, height: 140, borderRadius: '50%', background: 'rgba(255,255,255,0.08)' }}/>
+          <div style={{ position: 'absolute', bottom: -40, right: 20, width: 100, height: 100, borderRadius: '50%', background: 'rgba(255,255,255,0.05)' }}/>
+          <p style={{ fontSize: 12, opacity: 0.8, marginBottom: 6, fontWeight: 600 }}>Welcome back,</p>
+          <h2 style={{ fontSize: 32, fontWeight: 900, lineHeight: 1.1, marginBottom: 8 }}>{user?.firstName || 'Fan'} 👋</h2>
+          <p style={{ fontSize: 12, opacity: 0.75, fontWeight: 500 }}>🔥 The World Cup has started!</p>
         </div>
 
         {/* Today's Matches */}
-        <section>
-          <div className="flex items-center justify-between mb-3">
-            <h3 style={{ fontSize: 11, fontWeight: 800, color: '#666', letterSpacing: 3, textTransform: 'uppercase' }}>Today's Matches</h3>
-            <Link href="/matches" style={{ fontSize: 11, color: '#e63946', fontWeight: 700 }}>See all →</Link>
+        <div style={{ marginBottom: 24 }}>
+          <div className="flex items-center justify-between" style={{ marginBottom: 12 }}>
+            <p className="section-label">Today's Matches</p>
+            <Link href="/matches" style={{ fontSize: 11, color: '#e8003d', fontWeight: 700, textDecoration: 'none' }}>See all →</Link>
           </div>
-          <div className="space-y-2">
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
             {matches.length === 0 && (
-              <div style={{ background: '#111', borderRadius: 16, padding: '16px', textAlign: 'center', color: '#444', fontSize: 13 }}>Loading matches...</div>
+              <div className="card" style={{ padding: '20px', textAlign: 'center', color: 'var(--gray)', fontSize: 13 }}>Loading matches...</div>
             )}
-            {matches.map((m: any, idx: number) => (
-              <div key={m.id} style={{ background: '#111', borderRadius: 16, padding: '14px', borderLeft: `3px solid ${colors[idx % colors.length]}`, position: 'relative', overflow: 'hidden' }}>
-                {m.isLive && (
-                  <div style={{ position: 'absolute', top: 8, right: 8 }}>
-                    <span className="live-badge">LIVE {m.clock}</span>
-                  </div>
-                )}
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2 flex-1">
-                    <img src={m.homeLogo} alt="" style={{ width: 32, height: 32, objectFit: 'contain' }} onError={(e: any) => e.target.style.display='none'} />
-                    <span style={{ fontWeight: 800, fontSize: 14 }}>{m.homeTeamCode}</span>
-                  </div>
-                  <div style={{ textAlign: 'center', padding: '0 12px' }}>
-                    {m.isLive || m.isCompleted
-                      ? <span style={{ fontWeight: 900, fontSize: 22, color: colors[idx % colors.length] }}>{m.homeScore} - {m.awayScore}</span>
-                      : <span style={{ fontSize: 13, color: '#888', fontWeight: 700 }}>{new Date(m.kickoffAt).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}</span>
-                    }
-                    {m.isCompleted && <p style={{ fontSize: 9, color: '#555', marginTop: 2 }}>FULL TIME</p>}
-                  </div>
-                  <div className="flex items-center gap-2 flex-1 justify-end">
-                    <span style={{ fontWeight: 800, fontSize: 14 }}>{m.awayTeamCode}</span>
-                    <img src={m.awayLogo} alt="" style={{ width: 32, height: 32, objectFit: 'contain' }} onError={(e: any) => e.target.style.display='none'} />
+            {matches.map((m: any, idx: number) => {
+              const color = ACCENT_COLORS[idx % ACCENT_COLORS.length];
+              return (
+                <div key={m.id} className="match-card animate-slide-up" style={{ borderLeft: `3px solid ${color}` }}>
+                  {m.isLive && <div style={{ background: '#e8003d', padding: '4px 12px', display: 'flex', alignItems: 'center', gap: 6 }}><span className="pulse-dot" style={{ width: 6, height: 6, background: 'white', borderRadius: '50%', display: 'inline-block' }}/><span style={{ fontSize: 10, fontWeight: 800, color: 'white', letterSpacing: 1 }}>LIVE · {m.clock}</span></div>}
+                  {m.isCompleted && <div style={{ background: '#1a1a2e', padding: '4px 12px' }}><span style={{ fontSize: 10, fontWeight: 800, color: 'var(--gray)', letterSpacing: 1 }}>FULL TIME</span></div>}
+                  <div style={{ padding: '14px 16px' }}>
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2 flex-1">
+                        <img src={m.homeLogo} alt="" style={{ width: 34, height: 34, objectFit: 'contain' }} onError={(e: any) => e.target.style.display='none'} />
+                        <span style={{ fontWeight: 800, fontSize: 15 }}>{m.homeTeamCode}</span>
+                      </div>
+                      <div style={{ textAlign: 'center', padding: '0 16px' }}>
+                        {m.isLive || m.isCompleted
+                          ? <span style={{ fontWeight: 900, fontSize: 24, color }}>{m.homeScore} - {m.awayScore}</span>
+                          : <div><span style={{ fontSize: 14, color: 'var(--white)', fontWeight: 800 }}>{new Date(m.kickoffAt).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}</span><p style={{ fontSize: 9, color: 'var(--gray)', marginTop: 2 }}>vs</p></div>
+                        }
+                      </div>
+                      <div className="flex items-center gap-2 flex-1 justify-end">
+                        <span style={{ fontWeight: 800, fontSize: 15 }}>{m.awayTeamCode}</span>
+                        <img src={m.awayLogo} alt="" style={{ width: 34, height: 34, objectFit: 'contain' }} onError={(e: any) => e.target.style.display='none'} />
+                      </div>
+                    </div>
+                    <p style={{ fontSize: 10, color: 'var(--gray)', textAlign: 'center', marginTop: 10 }}>📍 {m.venue}</p>
                   </div>
                 </div>
-                <p style={{ fontSize: 10, color: '#444', textAlign: 'center', marginTop: 8 }}>📍 {m.venue}</p>
-              </div>
-            ))}
+              );
+            })}
           </div>
-        </section>
+        </div>
 
         {/* Quick Actions */}
-        <section>
-          <h3 style={{ fontSize: 11, fontWeight: 800, color: '#666', letterSpacing: 3, textTransform: 'uppercase', marginBottom: 12 }}>Explore</h3>
+        <div>
+          <p className="section-label">Explore</p>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 10 }}>
             {[
-              { emoji: '👥', label: 'Find Fans', href: '/fans', color: '#e63946' },
-              { emoji: '🫂', label: 'Groups', href: '/groups', color: '#8338ec' },
-              { emoji: '🤖', label: 'AI Guide', href: '/ai', color: '#2ec4b6' },
-              { emoji: '💬', label: 'Messages', href: '/messages', color: '#ff6b35' },
-              { emoji: '🏅', label: 'Passport', href: '/passport', color: '#ffbe0b' },
-              { emoji: '👤', label: 'Profile', href: '/profile', color: '#06d6a0' },
-            ].map(item => (
-              <Link key={item.href} href={item.href} style={{ background: '#111', borderRadius: 16, padding: '16px 8px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6, border: `1px solid #222`, textDecoration: 'none', transition: 'all 0.2s' }}>
-                <span style={{ fontSize: 26 }}>{item.emoji}</span>
-                <span style={{ fontSize: 10, fontWeight: 700, color: '#ccc', textAlign: 'center' }}>{item.label}</span>
+              { emoji: '👥', label: 'Find Fans', href: '/fans', color: '#e8003d' },
+              { emoji: '🫂', label: 'Groups', href: '/groups', color: '#7b2fff' },
+              { emoji: '🤖', label: 'AI Guide', href: '/ai', color: '#00c2a8' },
+              { emoji: '💬', label: 'Messages', href: '/messages', color: '#ff5c1a' },
+              { emoji: '🏅', label: 'Passport', href: '/passport', color: '#ffd700' },
+              { emoji: '👤', label: 'Profile', href: '/profile', color: '#00e676' },
+            ].map((item, i) => (
+              <Link key={item.href} href={item.href} className="animate-slide-up" style={{
+                background: 'var(--bg2)', borderRadius: 16, padding: '18px 8px',
+                display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8,
+                border: '1px solid var(--border)', textDecoration: 'none',
+                animationDelay: `${i * 50}ms`, transition: 'all 0.2s',
+              }}>
+                <span style={{ fontSize: 28 }}>{item.emoji}</span>
+                <span style={{ fontSize: 11, fontWeight: 700, color: '#aaa', textAlign: 'center' }}>{item.label}</span>
               </Link>
             ))}
           </div>
-        </section>
+        </div>
       </main>
       <BottomNav />
     </div>
