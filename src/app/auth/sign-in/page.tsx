@@ -63,7 +63,7 @@ export default function SignInPage() {
 
       <div style={{ maxWidth: 400, width: '100%', zIndex: 1 }}>
         <div style={{ textAlign: 'center', marginBottom: 36 }}>
-          <div style={{ fontSize: 64, marginBottom: 8 }}>🏆</div>
+          <div style={{ position: "relative", marginBottom: 8, display: "inline-block" }}><div style={{ fontSize: 80, filter: "drop-shadow(0 0 30px rgba(232,0,61,0.5)) drop-shadow(0 0 60px rgba(201,162,39,0.3))" }}>🏆</div></div>
           <h1 style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: 48, color: '#e8003d', letterSpacing: 4, lineHeight: 1 }}>FANVERSE</h1>
           <p style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: 28, color: '#c9a227', letterSpacing: 6, lineHeight: 1 }}>2026</p>
           <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: 12, marginTop: 8, fontWeight: 500, letterSpacing: 2 }}>YOUR WORLD CUP COMPANION</p>
