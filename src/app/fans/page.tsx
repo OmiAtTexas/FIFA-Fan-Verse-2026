@@ -32,7 +32,7 @@ export default function FansPage() {
     setFollowRequests(Array.isArray(data) ? data : []);
   };
 
-  useEffect(() => { if (userId) { load(); loadRequests(); } }, [userId]);
+  useEffect(() => { if (userId) { load(); loadRequests(); const i = setInterval(loadRequests, 10000); return () => clearInterval(i); } }, [userId]);
   useEffect(() => { const t = setTimeout(() => { if (userId) load(search); }, 400); return () => clearTimeout(t); }, [search]);
 
   const sendRequest = async (targetId: string) => {
