@@ -15,7 +15,7 @@ export default function MessagesPage() {
       .then(r => r.json()).then(data => { setConversations(Array.isArray(data) ? data : []); setLoading(false); });
   };
 
-  useEffect(() => { load(); const i = setInterval(load, 5000); return () => clearInterval(i); }, [userId]);
+  useEffect(() => { load(); const i = setInterval(load, 3000); return () => clearInterval(i); }, [userId]);
 
   return (
     <div className="page">
