@@ -83,9 +83,9 @@ export default function FansPage() {
             <button onClick={() => { setTab('requests'); loadRequests(); }} style={{ flex: 1, padding: '8px', borderRadius: 10, border: 'none', fontWeight: 700, fontSize: 13, cursor: 'pointer', background: tab === 'requests' ? '#7b2fff' : 'var(--bg3)', color: tab === 'requests' ? 'white' : 'var(--gray)', transition: 'all 0.2s', position: 'relative' }}>
               Requests {followRequests.length > 0 && <span style={{ position: 'absolute', top: -6, right: -4, background: '#e8003d', color: 'white', fontSize: 9, fontWeight: 800, width: 16, height: 16, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>{followRequests.length}</span>}
             </button>
-          </div>
+          </a>
           {tab === 'discover' && <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search by name, country, team..." className="input" />}
-        </div>
+        </a>
       </header>
 
       <main style={{ maxWidth: 480, margin: '0 auto', padding: '16px' }}>
@@ -96,30 +96,30 @@ export default function FansPage() {
                 <p style={{ fontSize: 48, marginBottom: 12 }}>🔔</p>
                 <p style={{ color: 'var(--gray)', fontWeight: 600 }}>No pending requests</p>
                 <p style={{ color: 'var(--gray2)', fontSize: 13, marginTop: 6 }}>When someone wants to follow you, they'll appear here</p>
-              </div>
+              </a>
             )}
             {followRequests.map((req: any) => (
               <div key={req.id} className="card" style={{ padding: 16 }}>
                 <div className="flex items-center gap-3" style={{ marginBottom: 12 }}>
                   <div style={{ width: 50, height: 50, borderRadius: '50%', background: '#7b2fff33', border: '2px solid #7b2fff', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', flexShrink: 0 }}>
                     {req.from?.avatarUrl ? <img src={req.from.avatarUrl} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : <span style={{ fontWeight: 800, fontSize: 20, color: '#7b2fff' }}>{req.from?.displayName?.[0] || '?'}</span>}
-                  </div>
+                  </a>
                   <div className="flex-1">
                     <p style={{ fontWeight: 800, fontSize: 15 }}>{req.from?.displayName}</p>
                     <div className="flex gap-2" style={{ marginTop: 3, flexWrap: 'wrap' }}>
                       {req.from?.nationality && <span style={{ fontSize: 11, color: 'var(--gray)' }}>🌍 {req.from.nationality}</span>}
                       {req.from?.supportedTeam && <span style={{ fontSize: 11, color: '#7b2fff' }}>⚽ {req.from.supportedTeam}</span>}
-                    </div>
+                    </a>
                     <p style={{ fontSize: 11, color: 'var(--gray)', marginTop: 3 }}>Wants to follow you</p>
-                  </div>
-                </div>
+                  </a>
+                </a>
                 <div className="flex gap-2">
                   <button onClick={() => acceptRequest(req.id)} style={{ flex: 1, padding: '10px', borderRadius: 12, background: '#e8003d', color: 'white', fontWeight: 700, border: 'none', cursor: 'pointer', fontSize: 13 }}>Accept</button>
                   <button onClick={() => declineRequest(req.id)} style={{ flex: 1, padding: '10px', borderRadius: 12, background: 'var(--bg3)', color: 'var(--gray)', fontWeight: 700, border: '1px solid var(--border)', cursor: 'pointer', fontSize: 13 }}>Decline</button>
-                </div>
-              </div>
+                </a>
+              </a>
             ))}
-          </div>
+          </a>
         )}
 
         {tab === 'discover' && (
@@ -130,34 +130,34 @@ export default function FansPage() {
               <div style={{ textAlign: 'center', padding: '60px 20px' }}>
                 <p style={{ fontSize: 48, marginBottom: 12 }}>🔍</p>
                 <p style={{ color: 'var(--gray)', fontWeight: 600 }}>No fans found</p>
-              </div>
+              </a>
             )}
             {users.map(u => {
               const btn = getBtn(u);
               return (
-                <div key={u.id} className="card" style={{ padding: 14, display: 'flex', alignItems: 'center', gap: 12 }}>
+                <a key={u.id} href={`/fans/${u.id}`} className="card" style={{ padding: 14, display: 'flex', alignItems: 'center', gap: 12 }}>
                   <div style={{ width: 50, height: 50, borderRadius: '50%', background: '#7b2fff33', border: '2px solid #7b2fff44', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', flexShrink: 0 }}>
                     {u.avatarUrl ? <img src={u.avatarUrl} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : <span style={{ fontWeight: 800, fontSize: 20, color: '#7b2fff' }}>{u.displayName?.[0] || '?'}</span>}
-                  </div>
+                  </a>
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <p style={{ fontWeight: 800, fontSize: 15, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{u.displayName || u.username}</p>
                     <div className="flex gap-2" style={{ marginTop: 3, flexWrap: 'wrap' }}>
                       {u.nationality && <span style={{ fontSize: 11, color: 'var(--gray)' }}>🌍 {u.nationality}</span>}
                       {u.supportedTeam && <span style={{ fontSize: 11, color: '#7b2fff', fontWeight: 600 }}>⚽ {u.supportedTeam}</span>}
-                    </div>
+                    </a>
                     {u.bio && <p style={{ fontSize: 11, color: 'var(--gray)', marginTop: 3, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{u.bio}</p>}
                     <p style={{ fontSize: 10, color: 'var(--gray2)', marginTop: 3 }}>{u._count?.followers || 0} followers</p>
-                  </div>
+                  </a>
                   <button onClick={btn.action || undefined} disabled={!btn.action || actionLoading === u.id || actionLoading === u.clerkId} style={{ flexShrink: 0, padding: '8px 14px', borderRadius: 10, background: btn.bg, color: btn.color, fontWeight: 700, border: 'none', cursor: btn.action ? 'pointer' : 'default', fontSize: 12, opacity: actionLoading === u.id ? 0.6 : 1, transition: 'all 0.2s' }}>
                     {actionLoading === u.id || actionLoading === u.clerkId ? '...' : btn.label}
                   </button>
-                </div>
+                </a>
               );
             })}
-          </div>
+          </a>
         )}
       </main>
       <BottomNav />
-    </div>
+    </a>
   );
 }
