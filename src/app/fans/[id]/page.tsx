@@ -13,10 +13,13 @@ export default function FanProfilePage({ params }: { params: { id: string } }) {
   const [actionLoading, setActionLoading] = useState(false);
 
   useEffect(() => {
-    fetch(`${process.env.NEXT_PUBLIC_API_URL}/users/${params.id}`)
+    if (!userId) return;
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}/users/${params.id}`, {
+      headers: { 'x-user-id': userId },
+    })
       .then(r => r.json())
       .then(data => { setFan(data); setLoading(false); });
-  }, [params.id]);
+  }, [params.id, userId]);
 
   const sendRequest = async () => {
     setActionLoading(true);
