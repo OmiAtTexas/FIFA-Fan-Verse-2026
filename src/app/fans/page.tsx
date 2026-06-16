@@ -32,8 +32,19 @@ export default function FansPage() {
     setFollowRequests(Array.isArray(data) ? data : []);
   };
 
-  useEffect(() => { if (userId) { load(); loadRequests(); const i = setInterval(loadRequests, 5000); return () => clearInterval(i); } }, [userId]);
-  useEffect(() => { const t = setTimeout(() => { if (userId) load(search); }, 400); return () => clearTimeout(t); }, [search]);
+  useEffect(() => {
+    if (userId) {
+      load();
+      loadRequests();
+      const i = setInterval(loadRequests, 5000);
+      return () => clearInterval(i);
+    }
+  }, [userId]);
+
+  useEffect(() => {
+    const t = setTimeout(() => { if (userId) load(search); }, 400);
+    return () => clearTimeout(t);
+  }, [search]);
 
   const sendRequest = async (targetId: string) => {
     setActionLoading(targetId);
@@ -66,26 +77,26 @@ export default function FansPage() {
   };
 
   const getBtn = (u: any) => {
-    if (u.followStatus === 'following' && u.canChat) return { label: '💬 Message', action: () => startChat(u.clerkId), bg: '#00c2a8', color: 'white' };
-    if (u.followStatus === 'following') return { label: '✓ Following', action: null, bg: 'var(--bg3)', color: 'var(--gray)' };
-    if (u.followStatus === 'requested') return { label: '⏳ Requested', action: null, bg: 'var(--bg3)', color: 'var(--gray)' };
-    return { label: '+ Follow', action: () => sendRequest(u.id), bg: '#e8003d', color: 'white' };
+    if (u.followStatus === 'following' && u.canChat) return { label: '💬 Message', action: () => startChat(u.clerkId), bg: '#00c2a8', color: '#000' };
+    if (u.followStatus === 'following') return { label: '✓ Following', action: null, bg: 'var(--bg3)', color: 'var(--text2)' };
+    if (u.followStatus === 'requested') return { label: '⏳ Requested', action: null, bg: 'var(--bg3)', color: 'var(--text2)' };
+    return { label: '+ Follow', action: () => sendRequest(u.id), bg: '#7b2fff', color: 'white' };
   };
 
   return (
     <div className="page">
-      <header className="header">
-        <div className="header-inner">
+      <header className="app-header">
+        <div className="app-header-inner">
           <h1 className="fifa-font" style={{ fontSize: 28, color: '#7b2fff' }}>FIND FANS</h1>
-          <p style={{ fontSize: 9, color: 'var(--gray)', letterSpacing: 3, textTransform: 'uppercase', marginBottom: 10 }}>Connect with fans worldwide</p>
-          <div className="flex gap-2" style={{ marginBottom: tab === 'discover' ? 10 : 0 }}>
-            <button onClick={() => setTab('discover')} style={{ flex: 1, padding: '8px', borderRadius: 10, border: 'none', fontWeight: 700, fontSize: 13, cursor: 'pointer', background: tab === 'discover' ? '#7b2fff' : 'var(--bg3)', color: tab === 'discover' ? 'white' : 'var(--gray)', transition: 'all 0.2s' }}>Discover</button>
-            <button onClick={() => { setTab('requests'); loadRequests(); }} style={{ flex: 1, padding: '8px', borderRadius: 10, border: 'none', fontWeight: 700, fontSize: 13, cursor: 'pointer', background: tab === 'requests' ? '#7b2fff' : 'var(--bg3)', color: tab === 'requests' ? 'white' : 'var(--gray)', transition: 'all 0.2s', position: 'relative' }}>
-              Requests {followRequests.length > 0 && <span style={{ position: 'absolute', top: -6, right: -4, background: '#e8003d', color: 'white', fontSize: 9, fontWeight: 800, width: 16, height: 16, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>{followRequests.length}</span>}
+          <p style={{ fontSize: 9, color: 'var(--text3)', letterSpacing: 3, textTransform: 'uppercase', marginBottom: 10 }}>Connect with fans worldwide</p>
+          <div style={{ display: 'flex', gap: 8, marginBottom: tab === 'discover' ? 10 : 0 }}>
+            <button onClick={() => setTab('discover')} style={{ flex: 1, padding: '8px', borderRadius: 10, border: 'none', fontWeight: 700, fontSize: 13, cursor: 'pointer', background: tab === 'discover' ? '#7b2fff' : 'var(--bg3)', color: tab === 'discover' ? 'white' : 'var(--text2)', transition: 'all 0.2s' }}>Discover</button>
+            <button onClick={() => { setTab('requests'); loadRequests(); }} style={{ flex: 1, padding: '8px', borderRadius: 10, border: 'none', fontWeight: 700, fontSize: 13, cursor: 'pointer', background: tab === 'requests' ? '#7b2fff' : 'var(--bg3)', color: tab === 'requests' ? 'white' : 'var(--text2)', transition: 'all 0.2s', position: 'relative' }}>
+              Requests {followRequests.length > 0 && <span style={{ position: 'absolute', top: -6, right: -4, background: '#e8003d', color: 'white', fontSize: 9, fontWeight: 800, width: 16, height: 16, borderRadius: '50%', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>{followRequests.length}</span>}
             </button>
-          </a>
+          </div>
           {tab === 'discover' && <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search by name, country, team..." className="input" />}
-        </a>
+        </div>
       </header>
 
       <main style={{ maxWidth: 480, margin: '0 auto', padding: '16px' }}>
@@ -94,70 +105,68 @@ export default function FansPage() {
             {followRequests.length === 0 && (
               <div style={{ textAlign: 'center', padding: '60px 20px' }}>
                 <p style={{ fontSize: 48, marginBottom: 12 }}>🔔</p>
-                <p style={{ color: 'var(--gray)', fontWeight: 600 }}>No pending requests</p>
-                <p style={{ color: 'var(--gray2)', fontSize: 13, marginTop: 6 }}>When someone wants to follow you, they'll appear here</p>
-              </a>
+                <p style={{ color: 'var(--text2)', fontWeight: 600 }}>No pending requests</p>
+              </div>
             )}
             {followRequests.map((req: any) => (
               <div key={req.id} className="card" style={{ padding: 16 }}>
-                <div className="flex items-center gap-3" style={{ marginBottom: 12 }}>
-                  <div style={{ width: 50, height: 50, borderRadius: '50%', background: '#7b2fff33', border: '2px solid #7b2fff', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', flexShrink: 0 }}>
-                    {req.from?.avatarUrl ? <img src={req.from.avatarUrl} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : <span style={{ fontWeight: 800, fontSize: 20, color: '#7b2fff' }}>{req.from?.displayName?.[0] || '?'}</span>}
-                  </a>
-                  <div className="flex-1">
-                    <p style={{ fontWeight: 800, fontSize: 15 }}>{req.from?.displayName}</p>
-                    <div className="flex gap-2" style={{ marginTop: 3, flexWrap: 'wrap' }}>
-                      {req.from?.nationality && <span style={{ fontSize: 11, color: 'var(--gray)' }}>🌍 {req.from.nationality}</span>}
+                <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 12 }}>
+                  <div className="avatar" style={{ width: 50, height: 50, fontSize: 20, border: '2px solid #7b2fff' }}>
+                    {req.from?.avatarUrl ? <img src={req.from.avatarUrl} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : req.from?.displayName?.[0] || '?'}
+                  </div>
+                  <div style={{ flex: 1 }}>
+                    <p style={{ fontWeight: 800 }}>{req.from?.displayName}</p>
+                    <div style={{ display: 'flex', gap: 8, marginTop: 3 }}>
+                      {req.from?.nationality && <span style={{ fontSize: 11, color: 'var(--text2)' }}>🌍 {req.from.nationality}</span>}
                       {req.from?.supportedTeam && <span style={{ fontSize: 11, color: '#7b2fff' }}>⚽ {req.from.supportedTeam}</span>}
-                    </a>
-                    <p style={{ fontSize: 11, color: 'var(--gray)', marginTop: 3 }}>Wants to follow you</p>
-                  </a>
-                </a>
-                <div className="flex gap-2">
-                  <button onClick={() => acceptRequest(req.id)} style={{ flex: 1, padding: '10px', borderRadius: 12, background: '#e8003d', color: 'white', fontWeight: 700, border: 'none', cursor: 'pointer', fontSize: 13 }}>Accept</button>
-                  <button onClick={() => declineRequest(req.id)} style={{ flex: 1, padding: '10px', borderRadius: 12, background: 'var(--bg3)', color: 'var(--gray)', fontWeight: 700, border: '1px solid var(--border)', cursor: 'pointer', fontSize: 13 }}>Decline</button>
-                </a>
-              </a>
+                    </div>
+                  </div>
+                </div>
+                <div style={{ display: 'flex', gap: 8 }}>
+                  <button onClick={() => acceptRequest(req.id)} style={{ flex: 1, padding: '10px', borderRadius: 12, background: '#e8003d', color: 'white', fontWeight: 700, border: 'none', cursor: 'pointer' }}>Accept</button>
+                  <button onClick={() => declineRequest(req.id)} style={{ flex: 1, padding: '10px', borderRadius: 12, background: 'var(--bg3)', color: 'var(--text2)', fontWeight: 700, border: '1px solid var(--border)', cursor: 'pointer' }}>Decline</button>
+                </div>
+              </div>
             ))}
-          </a>
+          </div>
         )}
 
         {tab === 'discover' && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-            {!search && <p style={{ fontSize: 10, fontWeight: 800, color: 'var(--gray)', letterSpacing: 3, textTransform: 'uppercase', marginBottom: 4 }}>Suggested Fans</p>}
+            {!search && <p className="section-label">Suggested Fans</p>}
             {loading && [1,2,3,4].map(i => <div key={i} className="card" style={{ height: 80, opacity: 0.3 }}/>)}
             {!loading && users.length === 0 && (
               <div style={{ textAlign: 'center', padding: '60px 20px' }}>
                 <p style={{ fontSize: 48, marginBottom: 12 }}>🔍</p>
-                <p style={{ color: 'var(--gray)', fontWeight: 600 }}>No fans found</p>
-              </a>
+                <p style={{ color: 'var(--text2)', fontWeight: 600 }}>No fans found</p>
+              </div>
             )}
             {users.map(u => {
               const btn = getBtn(u);
               return (
-                <a key={u.id} href={`/fans/${u.id}`} className="card" style={{ padding: 14, display: 'flex', alignItems: 'center', gap: 12 }}>
-                  <div style={{ width: 50, height: 50, borderRadius: '50%', background: '#7b2fff33', border: '2px solid #7b2fff44', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', flexShrink: 0 }}>
-                    {u.avatarUrl ? <img src={u.avatarUrl} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : <span style={{ fontWeight: 800, fontSize: 20, color: '#7b2fff' }}>{u.displayName?.[0] || '?'}</span>}
-                  </a>
+                <div key={u.id} className="card" style={{ padding: 14, display: 'flex', alignItems: 'center', gap: 12, cursor: 'pointer' }} onClick={() => router.push(`/fans/${u.id}`)}>
+                  <div className="avatar" style={{ width: 50, height: 50, fontSize: 20, border: '2px solid #7b2fff44' }}>
+                    {u.avatarUrl ? <img src={u.avatarUrl} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : u.displayName?.[0] || '?'}
+                  </div>
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <p style={{ fontWeight: 800, fontSize: 15, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{u.displayName || u.username}</p>
-                    <div className="flex gap-2" style={{ marginTop: 3, flexWrap: 'wrap' }}>
-                      {u.nationality && <span style={{ fontSize: 11, color: 'var(--gray)' }}>🌍 {u.nationality}</span>}
+                    <div style={{ display: 'flex', gap: 8, marginTop: 3, flexWrap: 'wrap' }}>
+                      {u.nationality && <span style={{ fontSize: 11, color: 'var(--text2)' }}>🌍 {u.nationality}</span>}
                       {u.supportedTeam && <span style={{ fontSize: 11, color: '#7b2fff', fontWeight: 600 }}>⚽ {u.supportedTeam}</span>}
-                    </a>
-                    {u.bio && <p style={{ fontSize: 11, color: 'var(--gray)', marginTop: 3, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{u.bio}</p>}
-                    <p style={{ fontSize: 10, color: 'var(--gray2)', marginTop: 3 }}>{u._count?.followers || 0} followers</p>
-                  </a>
-                  <button onClick={btn.action || undefined} disabled={!btn.action || actionLoading === u.id || actionLoading === u.clerkId} style={{ flexShrink: 0, padding: '8px 14px', borderRadius: 10, background: btn.bg, color: btn.color, fontWeight: 700, border: 'none', cursor: btn.action ? 'pointer' : 'default', fontSize: 12, opacity: actionLoading === u.id ? 0.6 : 1, transition: 'all 0.2s' }}>
+                    </div>
+                    {u.bio && <p style={{ fontSize: 11, color: 'var(--text3)', marginTop: 3, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{u.bio}</p>}
+                    <p style={{ fontSize: 10, color: 'var(--text3)', marginTop: 3 }}>{u._count?.followers || 0} followers</p>
+                  </div>
+                  <button onClick={e => { e.stopPropagation(); btn.action && btn.action(); }} disabled={!btn.action || actionLoading === u.id || actionLoading === u.clerkId} style={{ flexShrink: 0, padding: '8px 14px', borderRadius: 10, background: btn.bg, color: btn.color, fontWeight: 700, border: 'none', cursor: btn.action ? 'pointer' : 'default', fontSize: 12, opacity: actionLoading === u.id ? 0.6 : 1, transition: 'all 0.2s' }}>
                     {actionLoading === u.id || actionLoading === u.clerkId ? '...' : btn.label}
                   </button>
-                </a>
+                </div>
               );
             })}
-          </a>
+          </div>
         )}
       </main>
       <BottomNav />
-    </a>
+    </div>
   );
 }
