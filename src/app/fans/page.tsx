@@ -13,14 +13,12 @@ export default function FansPage() {
   const [loading, setLoading] = useState(true);
   const [followRequests, setFollowRequests] = useState<any[]>([]);
   const [tab, setTab] = useState<'discover' | 'requests'>('discover');
-  const [actionLoading, setActionLoading] = useState<string | null>(null);
+  const [busy, setBusy] = useState<string | null>(null);
 
   const load = async (q?: string) => {
     if (!userId) return;
     setLoading(true);
-    const url = q && q.length >= 2
-      ? `${process.env.NEXT_PUBLIC_API_URL}/users/search?q=${q}`
-      : `${process.env.NEXT_PUBLIC_API_URL}/users/suggestions`;
+    const url = q && q.length >= 2 ? `${process.env.NEXT_PUBLIC_API_URL}/users/search?q=${q}` : `${process.env.NEXT_PUBLIC_API_URL}/users/suggestions`;
     const res = await fetch(url, { headers: { 'x-user-id': userId } });
     const data = await res.json();
     setUsers(Array.isArray(data) ? data : []);
@@ -38,42 +36,38 @@ export default function FansPage() {
     if (userId) { load(); loadRequests(); const i = setInterval(loadRequests, 10000); return () => clearInterval(i); }
   }, [userId]);
 
-  useEffect(() => {
-    const t = setTimeout(() => { if (userId) load(search); }, 400);
-    return () => clearTimeout(t);
-  }, [search]);
+  useEffect(() => { const t = setTimeout(() => { if (userId) load(search); }, 400); return () => clearTimeout(t); }, [search]);
 
   const follow = async (targetId: string) => {
-    setActionLoading(targetId);
+    setBusy(targetId);
     await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users/${targetId}/follow-request`, { method: 'POST', headers: { 'x-user-id': userId || '' } });
     setUsers(u => u.map(x => x.id === targetId ? { ...x, followStatus: 'requested' } : x));
-    setActionLoading(null);
+    setBusy(null);
   };
 
   const unfollow = async (targetId: string) => {
-    if (!confirm('Unfollow? If you were messaging this person, the chat will be removed too.')) return;
-    setActionLoading(targetId);
+    if (!confirm('Unfollow? Your chat with this person will also be removed.')) return;
+    setBusy(targetId);
     await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users/${targetId}/unfollow`, { method: 'POST', headers: { 'x-user-id': userId || '' } });
     setUsers(u => u.map(x => x.id === targetId ? { ...x, followStatus: null, canChat: false } : x));
-    setActionLoading(null);
+    setBusy(null);
   };
 
   const cancelRequest = async (targetId: string) => {
-    setActionLoading(targetId);
+    setBusy(targetId);
     await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users/${targetId}/unfollow`, { method: 'POST', headers: { 'x-user-id': userId || '' } });
     setUsers(u => u.map(x => x.id === targetId ? { ...x, followStatus: null } : x));
-    setActionLoading(null);
+    setBusy(null);
   };
 
   const startChat = async (clerkId: string) => {
-    setActionLoading(clerkId);
+    setBusy(clerkId);
     const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/messages/dm/${clerkId}`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'x-user-id': userId || '' },
+      method: 'POST', headers: { 'Content-Type': 'application/json', 'x-user-id': userId || '' },
       body: JSON.stringify({ content: '👋 Hey!' }),
     });
     const data = await res.json();
-    setActionLoading(null);
+    setBusy(null);
     router.push(data.conversationId ? `/messages/${data.conversationId}` : '/messages');
   };
 
@@ -109,11 +103,11 @@ export default function FansPage() {
             {followRequests.length === 0 && <div style={{ textAlign: 'center', padding: '60px 20px' }}><p style={{ fontSize: 48, marginBottom: 12 }}>🔔</p><p style={{ color: 'var(--text2)', fontWeight: 600 }}>No pending requests</p></div>}
             {followRequests.map((req: any) => (
               <div key={req.id} className="card" style={{ padding: 16 }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 12 }}>
-                  <div className="avatar" style={{ width: 50, height: 50, fontSize: 20, border: '2px solid #7b2fff' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 12 }} onClick={() => router.push(`/fans/${req.from?.id}`)}>
+                  <div className="avatar" style={{ width: 50, height: 50, fontSize: 20, border: '2px solid #7b2fff', cursor: 'pointer' }}>
                     {req.from?.avatarUrl ? <img src={req.from.avatarUrl} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : req.from?.displayName?.[0] || '?'}
                   </div>
-                  <div style={{ flex: 1 }}>
+                  <div style={{ flex: 1, cursor: 'pointer' }}>
                     <p style={{ fontWeight: 800 }}>{req.from?.displayName}</p>
                     <div style={{ display: 'flex', gap: 8, marginTop: 3 }}>
                       {req.from?.nationality && <span style={{ fontSize: 11, color: 'var(--text2)' }}>🌍 {req.from.nationality}</span>}
@@ -136,7 +130,7 @@ export default function FansPage() {
             {loading && [1,2,3,4].map(i => <div key={i} className="card" style={{ height: 80, opacity: 0.3 }}/>)}
             {!loading && users.length === 0 && <div style={{ textAlign: 'center', padding: '60px 20px' }}><p style={{ fontSize: 48, marginBottom: 12 }}>🔍</p><p style={{ color: 'var(--text2)', fontWeight: 600 }}>No fans found</p></div>}
             {users.map(u => {
-              const busy = actionLoading === u.id || actionLoading === u.clerkId;
+              const isBusy = busy === u.id || busy === u.clerkId;
               return (
                 <div key={u.id} className="card" style={{ padding: 14, display: 'flex', alignItems: 'center', gap: 12, cursor: 'pointer' }} onClick={() => router.push(`/fans/${u.id}`)}>
                   <div className="avatar" style={{ width: 50, height: 50, fontSize: 20, border: '2px solid #7b2fff44' }}>
@@ -151,25 +145,25 @@ export default function FansPage() {
                     {u.bio && <p style={{ fontSize: 11, color: 'var(--text3)', marginTop: 3, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{u.bio}</p>}
                     <p style={{ fontSize: 10, color: 'var(--text3)', marginTop: 3 }}>{u._count?.followers || 0} followers</p>
                   </div>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: 6, flexShrink: 0, alignItems: 'stretch', minWidth: 90 }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 6, flexShrink: 0, alignItems: 'stretch', minWidth: 95 }}>
                     {u.canChat && (
-                      <button onClick={e => { e.stopPropagation(); startChat(u.clerkId); }} disabled={busy} style={{ padding: '7px 10px', borderRadius: 10, background: '#00c2a8', color: '#000', fontWeight: 700, border: 'none', cursor: 'pointer', fontSize: 11, opacity: busy ? 0.6 : 1 }}>
-                        {busy ? '...' : '💬 Message'}
+                      <button onClick={e => { e.stopPropagation(); startChat(u.clerkId); }} disabled={isBusy} style={{ padding: '8px 10px', borderRadius: 10, background: '#00c2a8', color: '#000', fontWeight: 700, border: 'none', cursor: 'pointer', fontSize: 12, opacity: isBusy ? 0.6 : 1 }}>
+                        {isBusy ? '...' : '💬 Message'}
                       </button>
                     )}
                     {u.followStatus === 'following' && (
-                      <button onClick={e => { e.stopPropagation(); unfollow(u.id); }} disabled={busy} style={{ padding: '7px 10px', borderRadius: 10, background: 'var(--bg3)', color: 'white', fontWeight: 700, border: '1px solid #ffffff33', cursor: 'pointer', fontSize: 11, opacity: busy ? 0.6 : 1 }}>
-                        {busy ? '...' : '✓ Following'}
+                      <button onClick={e => { e.stopPropagation(); unfollow(u.id); }} disabled={isBusy} style={{ padding: '8px 10px', borderRadius: 10, background: 'var(--bg3)', color: 'white', fontWeight: 700, border: '1px solid #ffffff33', cursor: 'pointer', fontSize: 12, opacity: isBusy ? 0.6 : 1 }}>
+                        {isBusy ? '...' : '✓ Following'}
                       </button>
                     )}
                     {u.followStatus === 'requested' && (
-                      <button onClick={e => { e.stopPropagation(); cancelRequest(u.id); }} disabled={busy} style={{ padding: '7px 10px', borderRadius: 10, background: 'var(--bg3)', color: 'var(--text2)', fontWeight: 700, border: '1px solid var(--border)', cursor: 'pointer', fontSize: 11 }}>
+                      <button onClick={e => { e.stopPropagation(); cancelRequest(u.id); }} disabled={isBusy} style={{ padding: '8px 10px', borderRadius: 10, background: 'var(--bg3)', color: 'var(--text2)', fontWeight: 700, border: '1px solid var(--border)', cursor: 'pointer', fontSize: 12 }}>
                         ⏳ Requested
                       </button>
                     )}
                     {!u.followStatus && (
-                      <button onClick={e => { e.stopPropagation(); follow(u.id); }} disabled={busy} style={{ padding: '7px 10px', borderRadius: 10, background: '#7b2fff', color: 'white', fontWeight: 700, border: 'none', cursor: 'pointer', fontSize: 11, opacity: busy ? 0.6 : 1 }}>
-                        {busy ? '...' : '+ Follow'}
+                      <button onClick={e => { e.stopPropagation(); follow(u.id); }} disabled={isBusy} style={{ padding: '8px 10px', borderRadius: 10, background: '#7b2fff', color: 'white', fontWeight: 700, border: 'none', cursor: 'pointer', fontSize: 12, opacity: isBusy ? 0.6 : 1 }}>
+                        {isBusy ? '...' : '+ Follow'}
                       </button>
                     )}
                   </div>
