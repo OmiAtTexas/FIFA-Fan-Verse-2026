@@ -1,7 +1,7 @@
 'use client';
 
 import { useUser, useClerk } from '@clerk/nextjs';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTheme } from '@/lib/theme';
 import { BottomNav } from '@/components/ui/BottomNav';
@@ -13,11 +13,24 @@ export default function ProfilePage() {
   const { theme, toggle } = useTheme();
   const [profile, setProfile] = useState<any>(null);
 
-  useEffect(() => {
+  const loadProfile = useCallback(() => {
     if (!user) return;
-    fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/me`, { headers: { 'x-user-id': user.id } })
-      .then(r => r.json()).then(data => { if (data) setProfile(data); });
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/me`, { 
+      headers: { 'x-user-id': user.id },
+      cache: 'no-store',
+    })
+      .then(r => r.json())
+      .then(data => { if (data) setProfile(data); });
   }, [user]);
+
+  useEffect(() => {
+    loadProfile();
+    // Refetch when tab becomes visible again (coming back from edit page)
+    const onFocus = () => loadProfile();
+    window.addEventListener('focus', onFocus);
+    document.addEventListener('visibilitychange', () => { if (!document.hidden) loadProfile(); });
+    return () => window.removeEventListener('focus', onFocus);
+  }, [loadProfile]);
 
   return (
     <div className="page">
@@ -31,21 +44,18 @@ export default function ProfilePage() {
       </header>
 
       <main className="inner" style={{ paddingBottom: 100 }}>
-        {/* Profile card */}
         <div style={{ background: 'linear-gradient(135deg, #7b2fff22, #e8003d22)', border: '1px solid #7b2fff33', borderRadius: 24, padding: 24, marginBottom: 20, textAlign: 'center' }}>
           <div style={{ width: 90, height: 90, borderRadius: '50%', border: '3px solid #7b2fff', margin: '0 auto 14px', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--bg3)', fontSize: 36, fontWeight: 800, color: '#7b2fff' }}>
             {user?.imageUrl ? <img src={user.imageUrl} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : user?.firstName?.[0] || '?'}
           </div>
-          <h2 style={{ fontSize: 22, fontWeight: 900, marginBottom: 4 }}>{user?.firstName} {user?.lastName}</h2>
-          
-          <div style={{ display: 'flex', justifyContent: 'center', gap: 12, flexWrap: 'wrap', marginBottom: 10 }}>
+          <h2 style={{ fontSize: 22, fontWeight: 900, marginBottom: 6 }}>{profile?.displayName || `${user?.firstName || ''} ${user?.lastName || ''}`.trim()}</h2>
+          <div style={{ display: 'flex', justifyContent: 'center', gap: 12, flexWrap: 'wrap', marginBottom: 8 }}>
             {profile?.nationality && <span style={{ fontSize: 13, color: 'var(--text2)' }}>🌍 {profile.nationality}</span>}
             {profile?.supportedTeam && <span style={{ fontSize: 13, color: '#7b2fff', fontWeight: 700 }}>⚽ {profile.supportedTeam}</span>}
           </div>
           {profile?.bio && <p style={{ fontSize: 14, color: 'var(--text2)', lineHeight: 1.5 }}>{profile.bio}</p>}
         </div>
 
-        {/* Interests */}
         {profile?.interests?.length > 0 && (
           <div style={{ marginBottom: 16 }}>
             <p className="section-label">Interests</p>
@@ -55,7 +65,6 @@ export default function ProfilePage() {
           </div>
         )}
 
-        {/* Cities */}
         {profile?.hostCities?.length > 0 && (
           <div style={{ marginBottom: 20 }}>
             <p className="section-label">Visiting</p>
@@ -65,7 +74,6 @@ export default function ProfilePage() {
           </div>
         )}
 
-        {/* Settings */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
           <div className="card" style={{ padding: '16px 20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
             <div>
@@ -76,7 +84,6 @@ export default function ProfilePage() {
               <span style={{ position: 'absolute', top: 3, left: theme === 'dark' ? 26 : 3, width: 22, height: 22, borderRadius: '50%', background: 'white', transition: 'left 0.3s', display: 'block' }}/>
             </button>
           </div>
-
           <button onClick={() => signOut()} style={{ padding: '14px', borderRadius: 14, background: 'var(--bg3)', color: '#e8003d', fontWeight: 700, fontSize: 14, border: '1px solid rgba(232,0,61,0.2)', cursor: 'pointer' }}>
             Sign Out
           </button>
