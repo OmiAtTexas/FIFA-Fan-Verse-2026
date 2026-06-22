@@ -18,11 +18,12 @@ export default function GroupsPage() {
   const [busyId, setBusyId] = useState<string | null>(null);
 
   const load = async () => {
+    if (!userId) return;
     setLoading(true);
     const url = search.length >= 2
       ? `${process.env.NEXT_PUBLIC_API_URL}/groups?search=${search}`
       : `${process.env.NEXT_PUBLIC_API_URL}/groups`;
-    const res = await fetch(url, { headers: { 'x-user-id': userId || '' } });
+    const res = await fetch(url, { headers: { 'x-user-id': userId } });
     const data = await res.json();
     setGroups(Array.isArray(data) ? data : []);
     setLoading(false);
@@ -87,12 +88,11 @@ export default function GroupsPage() {
         </div>
       </header>
 
-      {/* Create group modal */}
       {showCreate && (
         <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.9)', zIndex: 100, display: 'flex', alignItems: 'flex-end' }}>
           <div style={{ background: 'var(--bg2)', borderTop: '1px solid var(--border)', borderRadius: '24px 24px 0 0', padding: 24, width: '100%', maxWidth: 480, margin: '0 auto' }}>
             <h2 style={{ fontSize: 20, fontWeight: 900, color: '#00e676', marginBottom: 6 }}>Create Private Group</h2>
-            <p style={{ fontSize: 12, color: 'var(--text2)', marginBottom: 16 }}>Only people you both follow can be added. Group is private — invite only.</p>
+            <p style={{ fontSize: 12, color: 'var(--text2)', marginBottom: 16 }}>Private group — only you and people you invite can see it.</p>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
               <input value={newGroup.name} onChange={e => setNewGroup({...newGroup, name: e.target.value})} placeholder="Group name e.g. Brazil Fans 🇧🇷" className="input" />
               <input value={newGroup.description} onChange={e => setNewGroup({...newGroup, description: e.target.value})} placeholder="What's this group about? (optional)" className="input" />
@@ -106,7 +106,6 @@ export default function GroupsPage() {
       )}
 
       <main style={{ maxWidth: 480, margin: '0 auto', padding: '16px', paddingBottom: 100 }}>
-        {/* Community guidelines banner */}
         {tab === 'city' && (
           <div style={{ background: 'rgba(0,230,118,0.08)', border: '1px solid rgba(0,230,118,0.2)', borderRadius: 12, padding: '10px 14px', marginBottom: 14 }}>
             <p style={{ fontSize: 11, color: '#00e676', fontWeight: 700, marginBottom: 3 }}>📋 Community Guidelines</p>
@@ -127,7 +126,7 @@ export default function GroupsPage() {
         <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
           {displayed.map(g => (
             <div key={g.id} className="card" style={{ padding: 16, borderLeft: `3px solid ${g.isOfficial ? '#00e676' : '#7b2fff'}` }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 12, cursor: 'pointer' }} onClick={() => router.push(`/groups/${g.id}`)}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 12, cursor: 'pointer', marginBottom: 12 }} onClick={() => router.push(`/groups/${g.id}`)}>
                 <div style={{ width: 48, height: 48, borderRadius: 14, background: g.isOfficial ? '#00e67622' : '#7b2fff22', border: `1px solid ${g.isOfficial ? '#00e67644' : '#7b2fff44'}`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 24, flexShrink: 0 }}>
                   {g.isOfficial ? '🏟️' : '🔒'}
                 </div>
@@ -140,7 +139,7 @@ export default function GroupsPage() {
                   <p style={{ fontSize: 11, color: '#00e676', marginTop: 4 }}>👥 {g._count?.members || 0} members</p>
                 </div>
               </div>
-              <div style={{ display: 'flex', gap: 8, marginTop: 12 }}>
+              <div style={{ display: 'flex', gap: 8 }}>
                 {g.isMember ? (
                   <button onClick={() => leave(g.id)} disabled={busyId === g.id} style={{ flex: 1, padding: '9px', borderRadius: 10, background: 'var(--bg3)', color: 'var(--text2)', fontWeight: 700, fontSize: 13, border: '1px solid var(--border)', cursor: 'pointer' }}>
                     {busyId === g.id ? '...' : '✓ Joined'}

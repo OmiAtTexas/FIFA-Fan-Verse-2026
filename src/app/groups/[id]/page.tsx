@@ -46,7 +46,7 @@ export default function GroupChatPage({ params }: { params: { id: string } }) {
     });
     if (!res.ok) {
       const data = await res.json();
-      setError(data.message || 'Failed to send message');
+      setError(data.message || 'Failed to send');
     } else {
       setInput('');
       loadMessages();
@@ -72,7 +72,6 @@ export default function GroupChatPage({ params }: { params: { id: string } }) {
         </div>
       </header>
 
-      {/* Community guidelines */}
       {group?.isOfficial && (
         <div style={{ background: 'rgba(0,230,118,0.05)', borderBottom: '1px solid rgba(0,230,118,0.1)', padding: '6px 16px' }}>
           <p style={{ fontSize: 10, color: '#00e676', textAlign: 'center' }}>📋 No racism, hate speech, or abusive language. 3 violations = 24hr ban.</p>
