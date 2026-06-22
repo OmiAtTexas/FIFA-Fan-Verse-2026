@@ -139,7 +139,7 @@ export default function DMPage({ params }: { params: { id: string } }) {
                   {/* Reactions display */}
                   {msgReactions.length > 0 && (
                     <div style={{ position: 'absolute', bottom: -20, [isMe ? 'right' : 'left']: 0, display: 'flex', gap: 2 }}>
-                      {[...new Set(msgReactions)].map(emoji => (
+                      {Array.from(new Set(msgReactions)).map(emoji => (
                         <span key={emoji} onClick={() => addReaction(m.id || i.toString(), emoji)} style={{ background: 'var(--bg2)', border: '1px solid var(--border)', borderRadius: 99, padding: '1px 6px', fontSize: 12, cursor: 'pointer' }}>
                           {emoji} {msgReactions.filter(e => e === emoji).length}
                         </span>
