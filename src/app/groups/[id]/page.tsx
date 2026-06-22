@@ -5,6 +5,8 @@ import { useAuth } from '@clerk/nextjs';
 import { useRouter } from 'next/navigation';
 import { BottomNav } from '@/components/ui/BottomNav';
 
+const REACTIONS = ['❤️','😂','😮','🔥','👍','😢'];
+
 export default function GroupChatPage({ params }: { params: { id: string } }) {
   const { userId } = useAuth();
   const router = useRouter();
@@ -13,6 +15,8 @@ export default function GroupChatPage({ params }: { params: { id: string } }) {
   const [group, setGroup] = useState<any>(null);
   const [sending, setSending] = useState(false);
   const [error, setError] = useState('');
+  const [activeMsg, setActiveMsg] = useState<string | null>(null);
+  const [reactions, setReactions] = useState<Record<string, string[]>>({});
   const bottomRef = useRef<HTMLDivElement>(null);
 
   const loadMessages = async () => {
@@ -44,22 +48,34 @@ export default function GroupChatPage({ params }: { params: { id: string } }) {
       headers: { 'Content-Type': 'application/json', 'x-user-id': userId || '' },
       body: JSON.stringify({ content: input.trim() }),
     });
-    if (!res.ok) {
-      const data = await res.json();
-      setError(data.message || 'Failed to send');
-    } else {
-      setInput('');
-      loadMessages();
-    }
+    if (!res.ok) { const d = await res.json(); setError(d.message || 'Failed to send'); }
+    else { setInput(''); loadMessages(); }
     setSending(false);
   };
 
+  const deleteMsg = async (msgId: string) => {
+    await fetch(`${process.env.NEXT_PUBLIC_API_URL}/groups/${params.id}/messages/${msgId}`, {
+      method: 'DELETE', headers: { 'x-user-id': userId || '' },
+    });
+    setMessages(m => m.filter(x => x.id !== msgId));
+    setActiveMsg(null);
+  };
+
+  const addReaction = (msgId: string, emoji: string) => {
+    setReactions(r => {
+      const current = r[msgId] || [];
+      if (current.includes(emoji)) return { ...r, [msgId]: current.filter(e => e !== emoji) };
+      return { ...r, [msgId]: [...current, emoji] };
+    });
+    setActiveMsg(null);
+  };
+
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', background: 'var(--bg)', color: 'var(--text)' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', background: 'var(--bg)', color: 'var(--text)' }} onClick={() => setActiveMsg(null)}>
       <header className="app-header">
         <div className="app-header-inner" style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
           <button onClick={() => router.back()} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 20, color: '#00e676', padding: 0, fontWeight: 900 }}>←</button>
-          <div style={{ width: 38, height: 38, borderRadius: 12, background: '#00e67622', border: '1px solid #00e67644', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20 }}>
+          <div style={{ width: 38, height: 38, borderRadius: 12, background: '#00e67222', border: '1px solid #00e67644', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20 }}>
             {group?.isOfficial ? '🏟️' : '🔒'}
           </div>
           <div style={{ flex: 1 }}>
@@ -78,29 +94,62 @@ export default function GroupChatPage({ params }: { params: { id: string } }) {
         </div>
       )}
 
-      <div style={{ flex: 1, overflowY: 'auto', padding: '16px', paddingBottom: 80 }}>
+      <div style={{ flex: 1, overflowY: 'auto', padding: '16px', paddingBottom: 80 }} onClick={() => setActiveMsg(null)}>
         {messages.length === 0 && (
           <div style={{ textAlign: 'center', padding: '60px 20px' }}>
             <p style={{ fontSize: 48, marginBottom: 12 }}>💬</p>
             <p style={{ color: 'var(--text2)', fontWeight: 600 }}>No messages yet</p>
-            <p style={{ color: 'var(--text3)', fontSize: 12, marginTop: 6 }}>Be the first to say something!</p>
           </div>
         )}
         {messages.map((m: any, i: number) => {
           const isMe = m.sender?.clerkId === userId;
+          const msgReactions = reactions[m.id] || [];
+          const isActive = activeMsg === m.id;
+
           return (
-            <div key={i} style={{ display: 'flex', justifyContent: isMe ? 'flex-end' : 'flex-start', alignItems: 'flex-end', gap: 6, marginBottom: 10 }}>
+            <div key={m.id || i} style={{ display: 'flex', justifyContent: isMe ? 'flex-end' : 'flex-start', alignItems: 'flex-end', gap: 6, marginBottom: msgReactions.length > 0 ? 20 : 10, position: 'relative' }}>
               {!isMe && (
                 <div className="avatar" style={{ width: 28, height: 28, fontSize: 11, flexShrink: 0 }}>
                   {m.sender?.avatarUrl ? <img src={m.sender.avatarUrl} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : m.sender?.displayName?.[0] || '?'}
                 </div>
               )}
-              <div style={{ maxWidth: '75%' }}>
+              <div style={{ maxWidth: '75%', position: 'relative' }}>
                 {!isMe && <p style={{ fontSize: 10, color: 'var(--text3)', marginBottom: 3 }}>{m.sender?.displayName}</p>}
-                <div style={{ padding: '10px 14px', borderRadius: isMe ? '18px 18px 4px 18px' : '18px 18px 18px 4px', background: isMe ? '#00e676' : 'var(--bg2)', color: isMe ? '#000' : 'var(--text)', fontSize: 14, border: isMe ? 'none' : '1px solid var(--border)' }}>
+
+                {/* Reaction/delete popup */}
+                {isActive && (
+                  <div onClick={e => e.stopPropagation()} style={{ position: 'absolute', bottom: '100%', [isMe ? 'right' : 'left']: 0, background: 'var(--bg2)', border: '1px solid var(--border)', borderRadius: 16, padding: '8px 10px', display: 'flex', gap: 6, marginBottom: 6, zIndex: 100, boxShadow: '0 4px 20px rgba(0,0,0,0.4)', whiteSpace: 'nowrap', alignItems: 'center' }}>
+                    {REACTIONS.map(emoji => (
+                      <button key={emoji} onClick={() => addReaction(m.id, emoji)} style={{ background: 'none', border: 'none', fontSize: 20, cursor: 'pointer', padding: '2px 3px' }}>{emoji}</button>
+                    ))}
+                    {isMe && (
+                      <button onClick={() => deleteMsg(m.id)} style={{ background: 'rgba(232,0,61,0.15)', border: 'none', color: '#e8003d', fontSize: 11, fontWeight: 700, cursor: 'pointer', padding: '4px 10px', borderRadius: 99, marginLeft: 4 }}>
+                        🗑️ Delete
+                      </button>
+                    )}
+                  </div>
+                )}
+
+                <div
+                  onClick={e => { e.stopPropagation(); setActiveMsg(isActive ? null : m.id); }}
+                  style={{ padding: '10px 14px', borderRadius: isMe ? '18px 18px 4px 18px' : '18px 18px 18px 4px', background: isMe ? '#00e676' : 'var(--bg2)', color: isMe ? '#000' : 'var(--text)', fontSize: 14, border: isMe ? 'none' : '1px solid var(--border)', cursor: 'pointer' }}>
                   {m.content}
                 </div>
-                <p style={{ fontSize: 9, color: 'var(--text3)', marginTop: 3, textAlign: isMe ? 'right' : 'left' }}>{new Date(m.createdAt).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}</p>
+
+                {/* Reactions display */}
+                {msgReactions.length > 0 && (
+                  <div style={{ display: 'flex', gap: 3, marginTop: 4, flexWrap: 'wrap', justifyContent: isMe ? 'flex-end' : 'flex-start' }}>
+                    {Array.from(new Set(msgReactions)).map((emoji: any) => (
+                      <span key={emoji} onClick={() => addReaction(m.id, emoji)} style={{ background: 'var(--bg2)', border: '1px solid var(--border)', borderRadius: 99, padding: '2px 7px', fontSize: 12, cursor: 'pointer' }}>
+                        {emoji} {msgReactions.filter(e => e === emoji).length}
+                      </span>
+                    ))}
+                  </div>
+                )}
+
+                <p style={{ fontSize: 9, color: 'var(--text3)', marginTop: 3, textAlign: isMe ? 'right' : 'left' }}>
+                  {new Date(m.createdAt).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}
+                </p>
               </div>
             </div>
           );
