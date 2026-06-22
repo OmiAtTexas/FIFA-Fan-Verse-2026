@@ -78,7 +78,10 @@ export default function GroupsPage() {
               <h1 className="fifa-font" style={{ fontSize: 28, color: '#00e676' }}>FAN GROUPS</h1>
               <p style={{ fontSize: 9, color: 'var(--text3)', letterSpacing: 3, textTransform: 'uppercase' }}>Connect with fans in your city</p>
             </div>
-            <button onClick={() => setShowCreate(true)} style={{ padding: '8px 14px', borderRadius: 10, background: '#00e676', color: '#000', fontWeight: 800, border: 'none', cursor: 'pointer', fontSize: 12 }}>+ Create</button>
+            <div style={{ display: 'flex', gap: 8 }}>
+              <button onClick={() => router.push('/profile/hidden-groups')} style={{ padding: '8px 12px', borderRadius: 10, background: 'var(--bg3)', color: 'var(--text2)', fontWeight: 700, border: '1px solid var(--border)', cursor: 'pointer', fontSize: 11 }}>👁️ Hidden</button>
+              <button onClick={() => setShowCreate(true)} style={{ padding: '8px 14px', borderRadius: 10, background: '#00e676', color: '#000', fontWeight: 800, border: 'none', cursor: 'pointer', fontSize: 12 }}>+ Create</button>
+            </div>
           </div>
           <div style={{ display: 'flex', gap: 8, marginBottom: 10 }}>
             <button onClick={() => setTab('city')} style={{ flex: 1, padding: '8px', borderRadius: 10, border: 'none', fontWeight: 700, fontSize: 13, cursor: 'pointer', background: tab === 'city' ? '#00e676' : 'var(--bg3)', color: tab === 'city' ? '#000' : 'var(--text2)' }}>🌍 City Groups</button>
