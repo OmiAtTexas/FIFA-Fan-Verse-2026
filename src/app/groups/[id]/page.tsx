@@ -111,7 +111,7 @@ export default function GroupChatPage({ params }: { params: { id: string } }) {
         </div>
       </header>
 
-      {group?.isOfficial && (
+{group?.isOfficial && !group?.isMember && (
         <div style={{ background: 'rgba(0,230,118,0.05)', borderBottom: '1px solid rgba(0,230,118,0.1)', padding: '6px 16px' }}>
           <p style={{ fontSize: 10, color: '#00e676', textAlign: 'center' }}>📋 No racism or hate speech · 15s message cooldown · 3 violations = 24hr ban</p>
         </div>
@@ -138,21 +138,22 @@ export default function GroupChatPage({ params }: { params: { id: string } }) {
               )}
               <div style={{ maxWidth: '75%', position: 'relative' }}>
                 {!isMe && <p style={{ fontSize: 10, color: 'var(--text3)', marginBottom: 3 }}>{m.sender?.displayName}</p>}
+
+                <div onClick={e => { e.stopPropagation(); if (!m.content?.startsWith('__deleted__')) setActiveMsg(isActive ? null : m.id); }} style={{ padding: '10px 14px', borderRadius: isMe ? '18px 18px 4px 18px' : '18px 18px 18px 4px', background: m.content?.startsWith('__deleted__') ? 'transparent' : isMe ? '#00e676' : 'var(--bg2)', color: m.content?.startsWith('__deleted__') ? 'var(--text3)' : isMe ? '#000' : 'var(--text)', fontSize: m.content?.startsWith('__deleted__') ? 12 : 14, border: m.content?.startsWith('__deleted__') ? '1px dashed var(--border)' : isMe ? 'none' : '1px solid var(--border)', cursor: m.content?.startsWith('__deleted__') ? 'default' : 'pointer', fontStyle: m.content?.startsWith('__deleted__') ? 'italic' : 'normal' }}>
+                  {m.content?.startsWith('__deleted__') ? `🗑️ ${m.content.replace('__deleted__', '')} deleted a message` : m.content}
+                </div>
                 {isActive && !m.content?.startsWith('__deleted__') && (
-                  <div onClick={e => e.stopPropagation()} style={{ position: 'absolute', bottom: '100%', [isMe ? 'right' : 'left']: 0, background: 'var(--bg2)', border: '1px solid var(--border)', borderRadius: 16, padding: '8px 10px', display: 'flex', gap: 6, marginBottom: 6, zIndex: 100, boxShadow: '0 4px 20px rgba(0,0,0,0.4)', whiteSpace: 'nowrap', alignItems: 'center' }}>
+                  <div onClick={e => e.stopPropagation()} style={{ display: 'flex', gap: 6, marginTop: 6, flexWrap: 'wrap', justifyContent: isMe ? 'flex-end' : 'flex-start', alignItems: 'center' }}>
                     {REACTIONS.map(emoji => (
-                      <button key={emoji} onClick={() => addReaction(m.id, emoji)} style={{ background: 'none', border: 'none', fontSize: 20, cursor: 'pointer', padding: '2px 3px' }}>{emoji}</button>
+                      <button key={emoji} onClick={() => addReaction(m.id, emoji)} style={{ background: 'var(--bg2)', border: '1px solid var(--border)', borderRadius: 99, fontSize: 18, cursor: 'pointer', padding: '4px 8px' }}>{emoji}</button>
                     ))}
                     {isMe && (
-                      <button onClick={() => deleteMsg(m.id)} style={{ background: 'rgba(232,0,61,0.15)', border: 'none', color: '#e8003d', fontSize: 11, fontWeight: 700, cursor: 'pointer', padding: '4px 10px', borderRadius: 99, marginLeft: 4 }}>
+                      <button onClick={() => deleteMsg(m.id)} style={{ background: 'rgba(232,0,61,0.15)', border: '1px solid rgba(232,0,61,0.3)', color: '#e8003d', fontSize: 11, fontWeight: 700, cursor: 'pointer', padding: '4px 10px', borderRadius: 99 }}>
                         🗑️ Delete
                       </button>
                     )}
                   </div>
                 )}
-                <div onClick={e => { e.stopPropagation(); if (!m.content?.startsWith('__deleted__')) setActiveMsg(isActive ? null : m.id); }} style={{ padding: '10px 14px', borderRadius: isMe ? '18px 18px 4px 18px' : '18px 18px 18px 4px', background: m.content?.startsWith('__deleted__') ? 'transparent' : isMe ? '#00e676' : 'var(--bg2)', color: m.content?.startsWith('__deleted__') ? 'var(--text3)' : isMe ? '#000' : 'var(--text)', fontSize: m.content?.startsWith('__deleted__') ? 12 : 14, border: m.content?.startsWith('__deleted__') ? '1px dashed var(--border)' : isMe ? 'none' : '1px solid var(--border)', cursor: m.content?.startsWith('__deleted__') ? 'default' : 'pointer', fontStyle: m.content?.startsWith('__deleted__') ? 'italic' : 'normal' }}>
-                  {m.content?.startsWith('__deleted__') ? `🗑️ ${m.content.replace('__deleted__', '')} deleted a message` : m.content}
-                </div>
                 {msgReactions.length > 0 && (
                   <div style={{ display: 'flex', gap: 3, marginTop: 4, flexWrap: 'wrap', justifyContent: isMe ? 'flex-end' : 'flex-start' }}>
                     {Array.from(new Set(msgReactions)).map((emoji: any) => (
