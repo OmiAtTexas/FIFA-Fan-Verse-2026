@@ -84,6 +84,9 @@ export default function ProfilePage() {
               <span style={{ position: 'absolute', top: 3, left: theme === 'dark' ? 26 : 3, width: 22, height: 22, borderRadius: '50%', background: 'white', transition: 'left 0.3s', display: 'block' }}/>
             </button>
           </div>
+          <button onClick={() => router.push('/profile/hidden-groups')} style={{ padding: '14px', borderRadius: 14, background: 'var(--bg3)', color: 'var(--text2)', fontWeight: 700, fontSize: 14, border: '1px solid var(--border)', cursor: 'pointer' }}>
+            👁️ Hidden Groups
+          </button>
           <button onClick={() => signOut()} style={{ padding: '14px', borderRadius: 14, background: 'var(--bg3)', color: '#e8003d', fontWeight: 700, fontSize: 14, border: '1px solid rgba(232,0,61,0.2)', cursor: 'pointer' }}>
             Sign Out
           </button>
