@@ -3,9 +3,9 @@
 import { useEffect, useState, useRef } from 'react';
 import { useAuth } from '@clerk/nextjs';
 import { useRouter } from 'next/navigation';
-import { BottomNav } from '@/components/ui/BottomNav';
 
 const REACTIONS = ['❤️','😂','😮','🔥','👍','😢'];
+const COOLDOWN = 15;
 
 export default function GroupChatPage({ params }: { params: { id: string } }) {
   const { userId } = useAuth();
@@ -17,7 +17,20 @@ export default function GroupChatPage({ params }: { params: { id: string } }) {
   const [error, setError] = useState('');
   const [activeMsg, setActiveMsg] = useState<string | null>(null);
   const [reactions, setReactions] = useState<Record<string, string[]>>({});
+  const [cooldown, setCooldown] = useState(0);
+  const cooldownRef = useRef<any>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
+
+  const startCooldown = (seconds: number) => {
+    setCooldown(seconds);
+    clearInterval(cooldownRef.current);
+    cooldownRef.current = setInterval(() => {
+      setCooldown(prev => {
+        if (prev <= 1) { clearInterval(cooldownRef.current); return 0; }
+        return prev - 1;
+      });
+    }, 1000);
+  };
 
   const loadMessages = async () => {
     const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/groups/${params.id}/messages`);
@@ -29,7 +42,7 @@ export default function GroupChatPage({ params }: { params: { id: string } }) {
       .then(r => r.json()).then(setGroup);
     loadMessages();
     const i = setInterval(loadMessages, 3000);
-    return () => clearInterval(i);
+    return () => { clearInterval(i); clearInterval(cooldownRef.current); };
   }, [params.id, userId]);
 
   useEffect(() => { bottomRef.current?.scrollIntoView({ behavior: 'smooth' }); }, [messages]);
@@ -40,7 +53,7 @@ export default function GroupChatPage({ params }: { params: { id: string } }) {
   };
 
   const send = async () => {
-    if (!input.trim() || sending) return;
+    if (!input.trim() || sending || cooldown > 0) return;
     setError('');
     setSending(true);
     const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/groups/${params.id}/messages`, {
@@ -48,8 +61,16 @@ export default function GroupChatPage({ params }: { params: { id: string } }) {
       headers: { 'Content-Type': 'application/json', 'x-user-id': userId || '' },
       body: JSON.stringify({ content: input.trim() }),
     });
-    if (!res.ok) { const d = await res.json(); setError(d.message || 'Failed to send'); }
-    else { setInput(''); loadMessages(); }
+    if (!res.ok) {
+      const d = await res.json();
+      if (d.wait) startCooldown(d.wait);
+      else setError(d.message || 'Failed to send');
+    } else {
+      setInput('');
+      // Start cooldown for official groups
+      if (group?.isOfficial) startCooldown(COOLDOWN);
+      loadMessages();
+    }
     setSending(false);
   };
 
@@ -70,6 +91,8 @@ export default function GroupChatPage({ params }: { params: { id: string } }) {
     setActiveMsg(null);
   };
 
+  const canSend = input.trim() && !sending && cooldown === 0;
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', background: 'var(--bg)', color: 'var(--text)' }} onClick={() => setActiveMsg(null)}>
       <header className="app-header">
@@ -80,7 +103,7 @@ export default function GroupChatPage({ params }: { params: { id: string } }) {
           </div>
           <div style={{ flex: 1 }}>
             <p style={{ fontWeight: 800, fontSize: 15 }}>{group?.name || 'Loading...'}</p>
-            <p style={{ fontSize: 11, color: 'var(--text2)' }}>👥 {group?._count?.members || 0} members</p>
+            <p style={{ fontSize: 11, color: 'var(--text2)' }}>👥 {group?._count?.members || 0} members{group?.isOfficial ? ' · 15s cooldown' : ''}</p>
           </div>
           {!group?.isMember && group?.isPublic && (
             <button onClick={join} style={{ padding: '7px 14px', borderRadius: 10, background: '#00e676', color: '#000', fontWeight: 700, fontSize: 12, border: 'none', cursor: 'pointer' }}>Join</button>
@@ -90,7 +113,7 @@ export default function GroupChatPage({ params }: { params: { id: string } }) {
 
       {group?.isOfficial && (
         <div style={{ background: 'rgba(0,230,118,0.05)', borderBottom: '1px solid rgba(0,230,118,0.1)', padding: '6px 16px' }}>
-          <p style={{ fontSize: 10, color: '#00e676', textAlign: 'center' }}>📋 No racism, hate speech, or abusive language. 3 violations = 24hr ban.</p>
+          <p style={{ fontSize: 10, color: '#00e676', textAlign: 'center' }}>📋 No racism or hate speech · 15s message cooldown · 3 violations = 24hr ban</p>
         </div>
       )}
 
@@ -99,13 +122,13 @@ export default function GroupChatPage({ params }: { params: { id: string } }) {
           <div style={{ textAlign: 'center', padding: '60px 20px' }}>
             <p style={{ fontSize: 48, marginBottom: 12 }}>💬</p>
             <p style={{ color: 'var(--text2)', fontWeight: 600 }}>No messages yet</p>
+            <p style={{ color: 'var(--text3)', fontSize: 12, marginTop: 6 }}>Be the first to say something!</p>
           </div>
         )}
         {messages.map((m: any, i: number) => {
           const isMe = m.sender?.clerkId === userId;
           const msgReactions = reactions[m.id] || [];
           const isActive = activeMsg === m.id;
-
           return (
             <div key={m.id || i} style={{ display: 'flex', justifyContent: isMe ? 'flex-end' : 'flex-start', alignItems: 'flex-end', gap: 6, marginBottom: msgReactions.length > 0 ? 20 : 10, position: 'relative' }}>
               {!isMe && (
@@ -115,8 +138,6 @@ export default function GroupChatPage({ params }: { params: { id: string } }) {
               )}
               <div style={{ maxWidth: '75%', position: 'relative' }}>
                 {!isMe && <p style={{ fontSize: 10, color: 'var(--text3)', marginBottom: 3 }}>{m.sender?.displayName}</p>}
-
-                {/* Reaction/delete popup */}
                 {isActive && (
                   <div onClick={e => e.stopPropagation()} style={{ position: 'absolute', bottom: '100%', [isMe ? 'right' : 'left']: 0, background: 'var(--bg2)', border: '1px solid var(--border)', borderRadius: 16, padding: '8px 10px', display: 'flex', gap: 6, marginBottom: 6, zIndex: 100, boxShadow: '0 4px 20px rgba(0,0,0,0.4)', whiteSpace: 'nowrap', alignItems: 'center' }}>
                     {REACTIONS.map(emoji => (
@@ -129,14 +150,9 @@ export default function GroupChatPage({ params }: { params: { id: string } }) {
                     )}
                   </div>
                 )}
-
-                <div
-                  onClick={e => { e.stopPropagation(); setActiveMsg(isActive ? null : m.id); }}
-                  style={{ padding: '10px 14px', borderRadius: isMe ? '18px 18px 4px 18px' : '18px 18px 18px 4px', background: isMe ? '#00e676' : 'var(--bg2)', color: isMe ? '#000' : 'var(--text)', fontSize: 14, border: isMe ? 'none' : '1px solid var(--border)', cursor: 'pointer' }}>
+                <div onClick={e => { e.stopPropagation(); setActiveMsg(isActive ? null : m.id); }} style={{ padding: '10px 14px', borderRadius: isMe ? '18px 18px 4px 18px' : '18px 18px 18px 4px', background: isMe ? '#00e676' : 'var(--bg2)', color: isMe ? '#000' : 'var(--text)', fontSize: 14, border: isMe ? 'none' : '1px solid var(--border)', cursor: 'pointer' }}>
                   {m.content}
                 </div>
-
-                {/* Reactions display */}
                 {msgReactions.length > 0 && (
                   <div style={{ display: 'flex', gap: 3, marginTop: 4, flexWrap: 'wrap', justifyContent: isMe ? 'flex-end' : 'flex-start' }}>
                     {Array.from(new Set(msgReactions)).map((emoji: any) => (
@@ -146,7 +162,6 @@ export default function GroupChatPage({ params }: { params: { id: string } }) {
                     ))}
                   </div>
                 )}
-
                 <p style={{ fontSize: 9, color: 'var(--text3)', marginTop: 3, textAlign: isMe ? 'right' : 'left' }}>
                   {new Date(m.createdAt).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}
                 </p>
@@ -170,8 +185,31 @@ export default function GroupChatPage({ params }: { params: { id: string } }) {
         </div>
       ) : (
         <div style={{ position: 'sticky', bottom: 0, background: 'var(--bg)', borderTop: '1px solid var(--border)', padding: '10px 16px', display: 'flex', gap: 8, alignItems: 'center' }}>
-          <input value={input} onChange={e => setInput(e.target.value)} onKeyDown={e => e.key === 'Enter' && send()} placeholder="Type a message..." className="input" style={{ flex: 1 }} />
-          <button onClick={send} disabled={sending || !input.trim()} style={{ padding: '11px 16px', borderRadius: 12, background: '#00e676', color: '#000', fontWeight: 900, fontSize: 18, border: 'none', cursor: 'pointer', opacity: !input.trim() ? 0.5 : 1 }}>→</button>
+          <input
+            value={input}
+            onChange={e => setInput(e.target.value)}
+            onKeyDown={e => e.key === 'Enter' && send()}
+            placeholder={cooldown > 0 ? `Wait ${cooldown}s...` : 'Type a message...'}
+            className="input"
+            style={{ flex: 1, opacity: cooldown > 0 ? 0.6 : 1 }}
+            disabled={cooldown > 0}
+          />
+          {/* YouTube-style send button with countdown */}
+          <button
+            onClick={send}
+            disabled={!canSend}
+            style={{
+              width: 46, height: 46, borderRadius: 12, border: 'none', cursor: canSend ? 'pointer' : 'default',
+              background: cooldown > 0
+                ? `conic-gradient(#333 ${(cooldown / COOLDOWN) * 360}deg, #00e676 ${(cooldown / COOLDOWN) * 360}deg)`
+                : canSend ? '#00e676' : 'var(--bg3)',
+              color: cooldown > 0 ? 'white' : canSend ? '#000' : 'var(--text3)',
+              fontWeight: 900, fontSize: cooldown > 0 ? 13 : 18,
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              flexShrink: 0, transition: 'background 0.3s',
+            }}>
+            {cooldown > 0 ? cooldown : '→'}
+          </button>
         </div>
       )}
     </div>
