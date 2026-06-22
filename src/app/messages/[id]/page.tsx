@@ -111,7 +111,7 @@ export default function DMPage({ params }: { params: { id: string } }) {
                 <div style={{ position: 'relative', maxWidth: '75%' }}>
                   {/* Message bubble */}
                   <div
-                    onLongPress={() => {}}
+                    
                     onClick={e => { e.stopPropagation(); setShowReactions(showReactions === (m.id || i.toString()) ? null : (m.id || i.toString())); }}
                     style={{ padding: '10px 14px', borderRadius: isMe ? '18px 18px 4px 18px' : '18px 18px 18px 4px', background: isMe ? '#00c2a8' : 'var(--bg2)', color: isMe ? '#000' : 'var(--text)', fontSize: 14, fontWeight: isMe ? 600 : 400, border: isMe ? 'none' : '1px solid var(--border)', cursor: 'pointer' }}>
                     {isReply && lines ? (
