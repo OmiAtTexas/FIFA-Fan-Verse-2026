@@ -4,6 +4,10 @@ import { ThemeProvider } from '@/lib/theme';
 import './globals.css';
 
 export const metadata: Metadata = {
+  icons: {
+    icon: '/trophy.png',
+    apple: '/trophy.png',
+  },
   title: 'FanVerse 2026 — FIFA World Cup Fan Companion App',
   description: 'Connect with fans worldwide at FIFA World Cup 2026. Live scores, fan matching, group chat, AI travel guide. Your ultimate World Cup companion.',
   keywords: 'FIFA World Cup 2026, fan app, live scores, fan groups, travel guide, USA Canada Mexico, football fans',
