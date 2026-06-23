@@ -169,7 +169,7 @@ export default function GroupChatPage({ params }: { params: { id: string } }) {
                     ))}
                     {isMe && (
                       <button onClick={() => deleteMsg(m.id)} style={{ background: 'rgba(232,0,61,0.15)', border: '1px solid rgba(232,0,61,0.3)', color: '#e8003d', fontSize: 11, fontWeight: 700, cursor: 'pointer', padding: '4px 10px', borderRadius: 99 }}>
-                        🗑️ Delete
+                        Delete
                       </button>
                     )}
                   </div>

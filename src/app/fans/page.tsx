@@ -148,7 +148,7 @@ export default function FansPage() {
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 6, flexShrink: 0, alignItems: 'stretch', minWidth: 95 }}>
                     {u.canChat && (
                       <button onClick={e => { e.stopPropagation(); startChat(u.clerkId); }} disabled={isBusy} style={{ padding: '8px 10px', borderRadius: 10, background: '#00c2a8', color: '#000', fontWeight: 700, border: 'none', cursor: 'pointer', fontSize: 12, opacity: isBusy ? 0.6 : 1 }}>
-                        {isBusy ? '...' : '💬 Message'}
+                        {isBusy ? '...' : 'Message'}
                       </button>
                     )}
                     {u.followStatus === 'following' && (
@@ -158,12 +158,12 @@ export default function FansPage() {
                     )}
                     {u.followStatus === 'requested' && (
                       <button onClick={e => { e.stopPropagation(); cancelRequest(u.id); }} disabled={isBusy} style={{ padding: '8px 10px', borderRadius: 10, background: 'var(--bg3)', color: 'var(--text2)', fontWeight: 700, border: '1px solid var(--border)', cursor: 'pointer', fontSize: 12 }}>
-                        ⏳ Requested
+                        Requested
                       </button>
                     )}
                     {!u.followStatus && (
                       <button onClick={e => { e.stopPropagation(); follow(u.id); }} disabled={isBusy} style={{ padding: '8px 10px', borderRadius: 10, background: '#7b2fff', color: 'white', fontWeight: 700, border: 'none', cursor: 'pointer', fontSize: 12, opacity: isBusy ? 0.6 : 1 }}>
-                        {isBusy ? '...' : '+ Follow'}
+                        {isBusy ? '...' : 'Follow'}
                       </button>
                     )}
                   </div>

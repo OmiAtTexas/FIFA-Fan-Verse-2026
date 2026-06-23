@@ -87,25 +87,25 @@ export default function FanProfilePage({ params }: { params: { id: string } }) {
               {/* Message — only if mutual follows */}
               {fan.canChat && (
                 <button onClick={startChat} disabled={busy} style={{ flex: 1, padding: '13px', borderRadius: 12, background: '#00c2a8', color: '#000', fontWeight: 800, border: 'none', cursor: 'pointer', fontSize: 15 }}>
-                  {busy ? '...' : '💬 Message'}
+                  {busy ? '...' : 'Message'}
                 </button>
               )}
               {/* Following — tap to unfollow */}
               {fan.followStatus === 'following' && (
                 <button onClick={unfollow} disabled={busy} style={{ flex: 1, padding: '13px', borderRadius: 12, background: 'var(--bg3)', color: 'white', fontWeight: 700, border: '1px solid #ffffff33', cursor: 'pointer', fontSize: 15 }}>
-                  {busy ? '...' : '✓ Following'}
+                  {busy ? '...' : 'Following'}
                 </button>
               )}
               {/* Requested — tap to cancel */}
               {fan.followStatus === 'requested' && (
                 <button onClick={cancelRequest} disabled={busy} style={{ flex: 1, padding: '13px', borderRadius: 12, background: 'var(--bg3)', color: 'var(--text2)', fontWeight: 700, border: '1px solid var(--border)', cursor: 'pointer', fontSize: 15 }}>
-                  {busy ? '...' : '⏳ Requested'}
+                  {busy ? '...' : 'Requested'}
                 </button>
               )}
               {/* Follow — show when no relationship at all */}
               {!fan.followStatus && (
                 <button onClick={follow} disabled={busy} style={{ flex: 1, padding: '13px', borderRadius: 12, background: '#7b2fff', color: 'white', fontWeight: 800, border: 'none', cursor: 'pointer', fontSize: 15 }}>
-                  {busy ? '...' : '+ Follow'}
+                  {busy ? '...' : 'Follow'}
                 </button>
               )}
             </div>
