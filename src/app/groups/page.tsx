@@ -139,7 +139,7 @@ export default function GroupsPage() {
                     {g.isOfficial && <span style={{ fontSize: 9, background: '#00e676', color: '#000', fontWeight: 800, padding: '2px 6px', borderRadius: 99, flexShrink: 0 }}>OFFICIAL</span>}
                   </div>
                   <p style={{ fontSize: 12, color: 'var(--text2)', marginTop: 2, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{g.description}</p>
-                  <p style={{ fontSize: 11, color: '#00e676', marginTop: 4 }}>👥 {g._count?.members || 0} members</p>
+                  <p style={{ fontSize: 11, color: '#00e676', marginTop: 4 }}>{g._count?.members || 0} members</p>
                 </div>
               </div>
               <div style={{ display: 'flex', gap: 8 }}>
@@ -149,7 +149,7 @@ export default function GroupsPage() {
                   </button>
                 )}
                 <button onClick={() => router.push(`/groups/${g.id}`)} style={{ flex: 1, padding: '9px', borderRadius: 10, background: 'rgba(0,230,118,0.1)', color: '#00e676', fontWeight: 700, fontSize: 13, border: '1px solid rgba(0,230,118,0.2)', cursor: 'pointer' }}>
-                  💬 Chat
+                  Chat
                 </button>
                 {g.isOfficial && (
                   <button onClick={() => hide(g.id)} style={{ padding: '9px 12px', borderRadius: 10, background: 'var(--bg3)', color: 'var(--text3)', fontWeight: 700, fontSize: 11, border: '1px solid var(--border)', cursor: 'pointer' }}>
