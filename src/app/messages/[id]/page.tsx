@@ -168,7 +168,7 @@ export default function DMPage({ params }: { params: { id: string } }) {
       {/* Input */}
       <div style={{ position: 'fixed', bottom: 0, left: 0, right: 0, background: 'var(--bg)', borderTop: '1px solid var(--border)', padding: '10px 16px', maxWidth: 480, margin: '0 auto', display: 'flex', gap: 8, alignItems: 'center' }}>
         <input ref={inputRef} value={input} onChange={e => setInput(e.target.value)} onKeyDown={e => e.key === 'Enter' && send()} placeholder={other ? `Message ${other.displayName}...` : 'Loading...'} className="input" style={{ flex: 1 }} disabled={!other} />
-        <button onClick={send} disabled={sending || !input.trim() || !other} style={{ padding: '11px 16px', borderRadius: 12, background: '#00c2a8', color: '#000', fontWeight: 900, fontSize: 18, border: 'none', cursor: 'pointer', opacity: !input.trim() || !other ? 0.5 : 1, flexShrink: 0 }}>→</button>
+        <button onClick={send} disabled={sending || !input.trim() || !other} style={{ padding: '11px 16px', borderRadius: 12, background: '#00c2a8', color: '#000', fontWeight: 900, fontSize: 18, border: 'none', cursor: 'pointer', opacity: !input.trim() || !other ? 0.5 : 1, flexShrink: 0 }}><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg></button>
       </div>
     </div>
   );
