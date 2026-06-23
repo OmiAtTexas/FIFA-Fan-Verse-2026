@@ -45,7 +45,8 @@ export default function HomePage() {
     const loadNotifs = () => fetch(`${process.env.NEXT_PUBLIC_API_URL}/notifications`, { headers: { 'x-user-id': userId } }).then(r => r.json()).then(data => {
       if (!Array.isArray(data)) return;
       const lastSeen = parseInt(localStorage.getItem('notif_last_seen') || '0');
-      const unseen = data.filter(n => new Date(n.createdAt).getTime() > lastSeen);
+      const dismissed = JSON.parse(localStorage.getItem('dismissed_notifs') || '[]');
+      const unseen = data.filter(n => !dismissed.includes(n.id) && new Date(n.createdAt).getTime() > lastSeen);
       setNotifCount(unseen.length);
     }).catch(() => {});
     loadNotifs();
