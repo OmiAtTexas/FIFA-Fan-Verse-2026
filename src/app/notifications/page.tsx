@@ -10,6 +10,7 @@ export default function NotificationsPage() {
   const router = useRouter();
   const [notifications, setNotifications] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [dismissed, setDismissed] = useState<string[]>(() => JSON.parse(localStorage.getItem('dismissed_notifs') || '[]'));
 
   const load = async () => {
     if (!userId) return;
@@ -31,6 +32,12 @@ export default function NotificationsPage() {
   const decline = async (actionId: string, notifId: string) => {
     await fetch(`${process.env.NEXT_PUBLIC_API_URL}/notifications/follow-requests/${actionId}/decline`, { method: 'POST', headers: { 'x-user-id': userId || '' } });
     setNotifications(n => n.filter(x => x.id !== notifId));
+  };
+
+  const dismiss = (id: string) => {
+    const updated = [...dismissed, id];
+    setDismissed(updated);
+    localStorage.setItem('dismissed_notifs', JSON.stringify(updated));
   };
 
   const getBorderColor = (type: string) => {
@@ -66,7 +73,7 @@ export default function NotificationsPage() {
         )}
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-          {notifications.map(n => (
+          {notifications.filter(n => !dismissed.includes(n.id)).map(n => (
             <div key={n.id} className="card" style={{ padding: 14, borderLeft: `3px solid ${getBorderColor(n.type)}`, opacity: n.done ? 0.6 : 1 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
                 <div style={{ position: 'relative', flexShrink: 0 }} onClick={() => n.user && router.push(`/fans/${n.user.id}`)}>
@@ -87,9 +94,12 @@ export default function NotificationsPage() {
                     {new Date(n.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
                   </p>
                 </div>
-                <div style={{ flexShrink: 0 }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 6, flexShrink: 0 }}>
                   <button onClick={() => n.user && router.push(`/fans/${n.user.id}`)} style={{ padding: '6px 14px', borderRadius: 8, background: 'var(--bg3)', color: 'var(--text)', fontWeight: 600, fontSize: 12, border: '1px solid var(--border)', cursor: 'pointer' }}>
                     View
+                  </button>
+                  <button onClick={() => dismiss(n.id)} style={{ padding: '6px 14px', borderRadius: 8, background: 'transparent', color: 'var(--text3)', fontWeight: 600, fontSize: 12, border: '1px solid var(--border)', cursor: 'pointer' }}>
+                    Remove
                   </button>
                 </div>
               </div>
