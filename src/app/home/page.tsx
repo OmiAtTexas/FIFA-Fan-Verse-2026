@@ -1,13 +1,15 @@
 'use client';
 
-import { useUser } from '@clerk/nextjs';
+import { useUser, useAuth } from '@clerk/nextjs';
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { BottomNav } from '@/components/ui/BottomNav';
 
 export default function HomePage() {
   const { user } = useUser();
+  const { userId } = useAuth();
   const [matches, setMatches] = useState<any[]>([]);
+  const [notifCount, setNotifCount] = useState(0);
   const [synced, setSynced] = useState(false);
   const [profileData, setProfileData] = useState<any>(null);
   const hour = new Date().getHours();
@@ -38,6 +40,14 @@ export default function HomePage() {
     return () => clearInterval(i);
   }, []);
 
+  useEffect(() => {
+    if (!userId) return;
+    const loadNotifs = () => fetch(`${process.env.NEXT_PUBLIC_API_URL}/notifications`, { headers: { 'x-user-id': userId } }).then(r => r.json()).then(data => setNotifCount(Array.isArray(data) ? data.length : 0)).catch(() => {});
+    loadNotifs();
+    const n = setInterval(loadNotifs, 15000);
+    return () => clearInterval(n);
+  }, []);
+
   const liveMatches = matches.filter(m => m.isLive);
   const upcomingMatches = matches.filter(m => !m.isLive && !m.isCompleted);
 
@@ -51,6 +61,10 @@ export default function HomePage() {
             <h1 style={{ fontSize: 26, fontWeight: 900, color: 'white', lineHeight: 1.1, marginTop: 2 }}>FanVerse</h1>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            <Link href="/notifications" style={{ position: 'relative', textDecoration: 'none' }}>
+              <span style={{ fontSize: 22 }}>🔔</span>
+              {notifCount > 0 && <span style={{ position: 'absolute', top: -4, right: -4, background: '#e8003d', color: 'white', fontSize: 9, fontWeight: 800, minWidth: 16, height: 16, borderRadius: 99, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', padding: '0 4px' }}>{notifCount > 9 ? '9+' : notifCount}</span>}
+            </Link>
             {liveMatches.length > 0 && (
               <div style={{ display: 'flex', alignItems: 'center', gap: 6, background: 'rgba(232,0,61,0.15)', border: '1px solid rgba(232,0,61,0.3)', borderRadius: 99, padding: '5px 10px' }}>
                 <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#e8003d', animation: 'pulse 1s infinite' }} />
