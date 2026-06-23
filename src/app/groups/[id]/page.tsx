@@ -15,6 +15,7 @@ export default function GroupChatPage({ params }: { params: { id: string } }) {
   const [group, setGroup] = useState<any>(null);
   const [sending, setSending] = useState(false);
   const [error, setError] = useState('');
+  const [showMenu, setShowMenu] = useState(false);
   const [activeMsg, setActiveMsg] = useState<string | null>(null);
   const [reactions, setReactions] = useState<Record<string, string[]>>({});
   const [cooldown, setCooldown] = useState(0);
@@ -46,6 +47,13 @@ export default function GroupChatPage({ params }: { params: { id: string } }) {
   }, [params.id, userId]);
 
   useEffect(() => { bottomRef.current?.scrollIntoView({ behavior: 'smooth' }); }, [messages]);
+
+  const leave = async () => {
+    if (!confirm('Leave this group? You can rejoin anytime.')) return;
+    await fetch(`${process.env.NEXT_PUBLIC_API_URL}/groups/${params.id}/leave`, { method: 'POST', headers: { 'x-user-id': userId || '' } });
+    setGroup((g: any) => ({ ...g, isMember: false }));
+    setShowMenu(false);
+  };
 
   const join = async () => {
     await fetch(`${process.env.NEXT_PUBLIC_API_URL}/groups/${params.id}/join`, { method: 'POST', headers: { 'x-user-id': userId || '' } });
@@ -107,6 +115,18 @@ export default function GroupChatPage({ params }: { params: { id: string } }) {
           </div>
           {!group?.isMember && group?.isPublic && (
             <button onClick={join} style={{ padding: '7px 14px', borderRadius: 10, background: '#00e676', color: '#000', fontWeight: 700, fontSize: 12, border: 'none', cursor: 'pointer' }}>Join</button>
+          )}
+          {group?.isMember && (
+            <div style={{ position: 'relative' }}>
+              <button onClick={() => setShowMenu(m => !m)} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '4px 8px', borderRadius: 8, color: 'var(--text2)', fontSize: 20, fontWeight: 900, lineHeight: 1 }}>⋯</button>
+              {showMenu && (
+                <div style={{ position: 'absolute', right: 0, top: '100%', background: 'var(--bg2)', border: '1px solid var(--border)', borderRadius: 12, padding: 8, zIndex: 100, minWidth: 140, boxShadow: '0 4px 20px rgba(0,0,0,0.4)' }}>
+                  <button onClick={leave} style={{ width: '100%', padding: '10px 14px', background: 'none', border: 'none', color: '#e8003d', fontWeight: 700, fontSize: 14, cursor: 'pointer', textAlign: 'left', borderRadius: 8 }}>
+                    Leave Group
+                  </button>
+                </div>
+              )}
+            </div>
           )}
         </div>
       </header>
