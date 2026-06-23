@@ -42,7 +42,12 @@ export default function HomePage() {
 
   useEffect(() => {
     if (!userId) return;
-    const loadNotifs = () => fetch(`${process.env.NEXT_PUBLIC_API_URL}/notifications`, { headers: { 'x-user-id': userId } }).then(r => r.json()).then(data => setNotifCount(Array.isArray(data) ? data.length : 0)).catch(() => {});
+    const loadNotifs = () => fetch(`${process.env.NEXT_PUBLIC_API_URL}/notifications`, { headers: { 'x-user-id': userId } }).then(r => r.json()).then(data => {
+      if (!Array.isArray(data)) return;
+      const lastSeen = parseInt(localStorage.getItem('notif_last_seen') || '0');
+      const unseen = data.filter(n => new Date(n.createdAt).getTime() > lastSeen);
+      setNotifCount(unseen.length);
+    }).catch(() => {});
     loadNotifs();
     const n = setInterval(loadNotifs, 15000);
     return () => clearInterval(n);
@@ -61,9 +66,12 @@ export default function HomePage() {
             <h1 style={{ fontSize: 26, fontWeight: 900, color: 'white', lineHeight: 1.1, marginTop: 2 }}>FanVerse</h1>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-            <Link href="/notifications" style={{ position: 'relative', textDecoration: 'none' }}>
-              <span style={{ fontSize: 22 }}>🔔</span>
-              {notifCount > 0 && <span style={{ position: 'absolute', top: -4, right: -4, background: '#e8003d', color: 'white', fontSize: 9, fontWeight: 800, minWidth: 16, height: 16, borderRadius: 99, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', padding: '0 4px' }}>{notifCount > 9 ? '9+' : notifCount}</span>}
+            <Link href="/notifications" style={{ position: 'relative', textDecoration: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', width: 36, height: 36 }}>
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text2)' }}>
+                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+                <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+              </svg>
+              {notifCount > 0 && <span style={{ position: 'absolute', top: 0, right: 0, background: '#e8003d', color: 'white', fontSize: 9, fontWeight: 800, minWidth: 16, height: 16, borderRadius: 99, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', padding: '0 3px' }}>{notifCount > 9 ? '9+' : notifCount}</span>}
             </Link>
             {liveMatches.length > 0 && (
               <div style={{ display: 'flex', alignItems: 'center', gap: 6, background: 'rgba(232,0,61,0.15)', border: '1px solid rgba(232,0,61,0.3)', borderRadius: 99, padding: '5px 10px' }}>
