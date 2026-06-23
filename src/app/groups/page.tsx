@@ -143,11 +143,7 @@ export default function GroupsPage() {
                 </div>
               </div>
               <div style={{ display: 'flex', gap: 8 }}>
-                {g.isMember ? (
-                  <button onClick={() => leave(g.id)} disabled={busyId === g.id} style={{ flex: 1, padding: '9px', borderRadius: 10, background: 'var(--bg3)', color: 'var(--text2)', fontWeight: 700, fontSize: 13, border: '1px solid var(--border)', cursor: 'pointer' }}>
-                    {busyId === g.id ? '...' : '✓ Joined'}
-                  </button>
-                ) : (
+                (!g.isMember && (
                   <button onClick={() => join(g.id)} disabled={busyId === g.id} style={{ flex: 1, padding: '9px', borderRadius: 10, background: '#00e676', color: '#000', fontWeight: 700, fontSize: 13, border: 'none', cursor: 'pointer' }}>
                     {busyId === g.id ? '...' : '+ Join'}
                   </button>
