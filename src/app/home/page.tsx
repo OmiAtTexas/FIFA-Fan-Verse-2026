@@ -186,15 +186,17 @@ export default function HomePage() {
           <p style={{ fontSize: 12, fontWeight: 800, letterSpacing: 2, color: 'rgba(255,255,255,0.6)', marginBottom: 12 }}>EXPLORE</p>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 10 }}>
             {[
-              { emoji: '👥', label: 'Find Fans', href: '/fans', color: '#e8003d', bg: 'rgba(232,0,61,0.1)' },
-              { emoji: '🫂', label: 'Groups', href: '/groups', color: '#7b2fff', bg: 'rgba(123,47,255,0.1)' },
-              { emoji: '🤖', label: 'AI Guide', href: '/ai', color: '#00c2a8', bg: 'rgba(0,194,168,0.1)' },
-              { emoji: '💬', label: 'Messages', href: '/messages', color: '#ff5c1a', bg: 'rgba(255,92,26,0.1)' },
-              { emoji: '🏅', label: 'Passport', href: '/passport', color: '#ffd700', bg: 'rgba(255,215,0,0.1)' },
-              { emoji: '👤', label: 'Profile', href: '/profile', color: '#00e676', bg: 'rgba(0,230,118,0.1)' },
+              { label: 'Find Fans', href: '/fans', color: '#e8003d', bg: 'rgba(232,0,61,0.1)', icon: 'M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2M9 7a4 4 0 1 0 8 0 4 4 0 0 0-8 0M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75' },
+              { label: 'Groups', href: '/groups', color: '#7b2fff', bg: 'rgba(123,47,255,0.1)', icon: 'M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2M9 7a4 4 0 1 0 8 0 4 4 0 0 0-8 0M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75' },
+              { label: 'AI Guide', href: '/ai', color: '#00c2a8', bg: 'rgba(0,194,168,0.1)', icon: 'M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zM12 8v4M12 16h.01' },
+              { label: 'Messages', href: '/messages', color: '#ff5c1a', bg: 'rgba(255,92,26,0.1)', icon: 'M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z' },
+              { label: 'Passport', href: '/passport', color: '#ffd700', bg: 'rgba(255,215,0,0.1)', icon: 'M2 4h20v16H2zM12 8v8M8 12h8' },
+              { label: 'Profile', href: '/profile', color: '#00e676', bg: 'rgba(0,230,118,0.1)', icon: 'M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2M12 3a4 4 0 1 0 0 8 4 4 0 0 0 0-8' },
             ].map(item => (
               <Link key={item.href} href={item.href} style={{ background: item.bg, border: `1px solid ${item.color}22`, borderRadius: 18, padding: '18px 8px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8, textDecoration: 'none', transition: 'all 0.2s' }}>
-                <span style={{ fontSize: 28 }}>{item.emoji}</span>
+                <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke={item.color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  {item.icon.split('M').filter(Boolean).map((d: string, i: number) => <path key={i} d={'M' + d} />)}
+                </svg>
                 <span style={{ fontSize: 11, fontWeight: 700, color: item.color, textAlign: 'center' }}>{item.label}</span>
               </Link>
             ))}
