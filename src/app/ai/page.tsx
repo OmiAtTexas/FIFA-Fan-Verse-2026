@@ -5,14 +5,14 @@ import { useAuth } from '@clerk/nextjs';
 import { BottomNav } from '@/components/ui/BottomNav';
 
 const QUICK = [
-  '🏟️ Things to do before a match in Dallas',
-  '🌮 Best food in Mexico City',
-  '🚇 How to get to MetLife Stadium NYC',
-  '🏖️ Matchday tips for Miami',
-  '✈️ Travel tips for World Cup fans',
-  '🗺️ Which cities are best to visit?',
-  '💰 Budget tips for World Cup travel',
-  '🍺 Best fan zones in Los Angeles',
+  'Things to do before a match in Dallas',
+  'Best food in Mexico City',
+  'How to get to MetLife Stadium NYC',
+  'Matchday tips for Miami',
+  'Travel tips for World Cup fans',
+  'Which cities are best to visit?',
+  'Budget tips for World Cup travel',
+  'Best fan zones in Los Angeles',
 ];
 
 const DEFAULT_MSG = { role: 'assistant', content: "Hey! I'm your FIFA World Cup 2026 AI guide 🌍⚽ Ask me anything about host cities, travel, food, transport, or match day tips!" };
@@ -106,7 +106,7 @@ export default function AiPage() {
         </div>
         <div style={{ display: 'flex', gap: 8 }}>
           <input value={input} onChange={e => setInput(e.target.value)} onKeyDown={e => e.key === 'Enter' && send(input)} placeholder="Ask anything about World Cup 2026..." className="input" style={{ flex: 1 }} />
-          <button onClick={() => send(input)} disabled={!input.trim() || loading} style={{ padding: '12px 18px', borderRadius: 12, background: '#ffd700', color: '#000', fontWeight: 900, fontSize: 18, border: 'none', cursor: 'pointer', opacity: !input.trim() || loading ? 0.5 : 1, transition: 'all 0.2s' }}>→</button>
+          <button onClick={() => send(input)} disabled={!input.trim() || loading} style={{ padding: '12px 18px', borderRadius: 12, background: '#ffd700', color: '#000', fontWeight: 900, fontSize: 18, border: 'none', cursor: 'pointer', opacity: !input.trim() || loading ? 0.5 : 1, transition: 'all 0.2s', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><svg width='18' height='18' viewBox='0 0 24 24' fill='none' stroke='currentColor' strokeWidth='2' strokeLinecap='round' strokeLinejoin='round'><line x1='22' y1='2' x2='11' y2='13'/><polygon points='22 2 15 22 11 13 2 9 22 2'/></svg></button>
         </div>
       </div>
       <BottomNav />

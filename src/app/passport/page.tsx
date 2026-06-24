@@ -61,13 +61,12 @@ export default function PassportPage() {
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 8 }}>
             {[
-              { label: 'Matches', value: 0, icon: '⚽' },
-              { label: 'Cities', value: 0, icon: '📍' },
-              { label: 'Groups', value: 1, icon: '👥' },
-              { label: 'Stamps', value: earned.length, icon: '🏅' },
+              { label: 'Matches', value: 0 },
+              { label: 'Cities', value: 0 },
+              { label: 'Groups', value: 1 },
+              { label: 'Stamps', value: earned.length },
             ].map(s => (
               <div key={s.label} style={{ background: 'rgba(0,0,0,0.3)', borderRadius: 12, padding: '10px 6px', textAlign: 'center', border: '1px solid rgba(201,162,39,0.2)' }}>
-                <p style={{ fontSize: 18 }}>{s.icon}</p>
                 <p style={{ fontSize: 20, fontWeight: 900, color: '#c9a227' }}>{s.value}</p>
                 <p style={{ fontSize: 9, color: 'rgba(255,255,255,0.4)', letterSpacing: 1 }}>{s.label.toUpperCase()}</p>
               </div>

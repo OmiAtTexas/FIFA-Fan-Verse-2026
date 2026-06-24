@@ -50,14 +50,14 @@ export default function MatchesPage() {
     <div className="page">
       <header className="app-header">
         <div className="app-header-inner">
-          <div className="flex items-center justify-between">
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
             <div>
               <h1 className="fifa-font" style={{ fontSize: 28, color: '#ff5c1a' }}>MATCHES</h1>
-              <p style={{ fontSize: 9, color: 'var(--gray)', letterSpacing: 3, textTransform: 'uppercase' }}>FIFA World Cup 2026</p>
+              <p style={{ fontSize: 9, color: 'var(--text3)', letterSpacing: 3, textTransform: 'uppercase' }}>FIFA World Cup 2026</p>
             </div>
             <span className="live-badge"><span className="pulse-dot" style={{ width: 6, height: 6, background: 'white', borderRadius: '50%', display: 'inline-block' }}/>LIVE</span>
           </div>
-          <div className="flex gap-2 scrollbar-hide" style={{ overflowX: 'auto', marginTop: 12, paddingBottom: 4 }}>
+          <div className="scrollbar-hide" style={{ overflowX: 'auto', marginTop: 12, paddingBottom: 4 }}>
             <button onClick={() => setSelectedDate('')} className="pill" style={{ background: selectedDate === '' ? '#e8003d' : 'var(--bg3)', color: selectedDate === '' ? 'white' : '#888', borderColor: selectedDate === '' ? '#e8003d' : 'var(--border)', flexShrink: 0 }}>Today</button>
             {getDates().map(d => {
               const key = formatDate(d);
@@ -80,22 +80,22 @@ export default function MatchesPage() {
         {!loading && matches.length === 0 && (
           <div style={{ textAlign: 'center', padding: '60px 20px' }}>
             <p style={{ fontSize: 48, marginBottom: 12 }}>📅</p>
-            <p style={{ color: 'var(--gray)', fontWeight: 600 }}>No matches on this date</p>
+            <p style={{ color: 'var(--text3)', fontWeight: 600 }}>No matches on this date</p>
           </div>
         )}
         {Object.entries(grouped).map(([date, dayMatches]: any) => (
           <div key={date} style={{ marginBottom: 24 }}>
-            <p style={{ fontSize: 10, fontWeight: 800, color: 'var(--gray)', letterSpacing: 3, textTransform: 'uppercase', marginBottom: 10 }}>{date}</p>
+            <p style={{ fontSize: 10, fontWeight: 800, color: 'var(--text3)', letterSpacing: 3, textTransform: 'uppercase', marginBottom: 10 }}>{date}</p>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
               {dayMatches.map((m: any, idx: number) => {
                 const color = COLORS[idx % COLORS.length];
                 return (
-                  <div key={m.id} className="match-card" style={{ borderLeft: `3px solid ${color}` }}>
+                  <div key={m.id} className="card" style={{ borderLeft: `3px solid ${color}` }}>
                     {m.isLive && <div style={{ background: '#e8003d', padding: '5px 14px', display: 'flex', alignItems: 'center', gap: 6 }}><span className="pulse-dot" style={{ width: 6, height: 6, background: 'white', borderRadius: '50%', display: 'inline-block' }}/><span style={{ fontSize: 10, fontWeight: 800, color: 'white', letterSpacing: 1 }}>LIVE · {m.clock}</span></div>}
-                    {m.isCompleted && <div style={{ background: 'var(--bg3)', padding: '5px 14px' }}><span style={{ fontSize: 10, fontWeight: 800, color: 'var(--gray)', letterSpacing: 1 }}>FULL TIME</span></div>}
+                    {m.isCompleted && <div style={{ background: 'var(--bg3)', padding: '5px 14px' }}><span style={{ fontSize: 10, fontWeight: 800, color: 'var(--text3)', letterSpacing: 1 }}>FULL TIME</span></div>}
                     <div style={{ padding: '16px' }}>
-                      <div className="flex items-center justify-between">
-                        <div className="flex-1 flex flex-col items-center gap-2">
+                      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                        <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", gap: 8 }}>
                           <img src={m.homeLogo} alt={m.homeTeam} style={{ width: 48, height: 48, objectFit: 'contain' }} onError={(e: any) => e.target.style.display='none'} />
                           <p style={{ fontWeight: 800, fontSize: 13, textAlign: 'center' }}>{m.homeTeam}</p>
                         </div>
@@ -108,18 +108,18 @@ export default function MatchesPage() {
                           ) : (
                             <div>
                               <p style={{ fontWeight: 900, fontSize: 16, color: 'white' }}>{new Date(m.kickoffAt).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}</p>
-                              <p style={{ fontSize: 10, color: 'var(--gray)', marginTop: 2 }}>vs</p>
+                              <p style={{ fontSize: 10, color: 'var(--text3)', marginTop: 2 }}>vs</p>
                             </div>
                           )}
-                          <p style={{ fontSize: 9, color: 'var(--gray)', marginTop: 6 }}>{m.stage}</p>
+                          <p style={{ fontSize: 9, color: 'var(--text3)', marginTop: 6 }}>{m.stage}</p>
                         </div>
-                        <div className="flex-1 flex flex-col items-center gap-2">
+                        <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", gap: 8 }}>
                           <img src={m.awayLogo} alt={m.awayTeam} style={{ width: 48, height: 48, objectFit: 'contain' }} onError={(e: any) => e.target.style.display='none'} />
                           <p style={{ fontWeight: 800, fontSize: 13, textAlign: 'center' }}>{m.awayTeam}</p>
                         </div>
                       </div>
                       <div style={{ marginTop: 12, paddingTop: 12, borderTop: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <p style={{ fontSize: 10, color: 'var(--gray)' }}>📍 {m.venue}{m.city ? `, ${m.city}` : ''}</p>
+                        <p style={{ fontSize: 10, color: 'var(--text3)' }}>📍 {m.venue}{m.city ? `, ${m.city}` : ''}</p>
                         {m.isCompleted && m.espnUrl && <a href={m.espnUrl} target="_blank" rel="noopener noreferrer" style={{ fontSize: 10, color: '#e8003d', fontWeight: 700, textDecoration: 'none' }}>ESPN →</a>}
                       </div>
                     </div>
