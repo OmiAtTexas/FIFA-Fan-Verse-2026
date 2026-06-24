@@ -107,7 +107,7 @@ export default function GroupChatPage({ params }: { params: { id: string } }) {
         <div className="app-header-inner" style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
           <button onClick={() => router.back()} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 20, color: '#00e676', padding: 0, fontWeight: 900 }}>←</button>
           <div style={{ width: 38, height: 38, borderRadius: 12, background: '#00e67222', border: '1px solid #00e67644', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20 }}>
-            {group?.isOfficial ? '🏟️' : '🔒'}
+            {group?.isOfficial ? '●' : '○'}
           </div>
           <div style={{ flex: 1 }}>
             <p style={{ fontWeight: 800, fontSize: 15 }}>{group?.name || 'Loading...'}</p>

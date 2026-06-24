@@ -44,7 +44,7 @@ export default function HiddenGroupsPage() {
         )}
         {groups.map(g => (
           <div key={g.id} className="card" style={{ padding: 14, display: 'flex', alignItems: 'center', gap: 12, marginBottom: 10 }}>
-            <div style={{ width: 42, height: 42, borderRadius: 12, background: '#00e67222', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20 }}>🏟️</div>
+            <div style={{ width: 42, height: 42, borderRadius: 12, background: '#00e67222', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20 }}>●</div>
             <div style={{ flex: 1 }}>
               <p style={{ fontWeight: 700, fontSize: 14 }}>{g.name}</p>
               <p style={{ fontSize: 11, color: 'var(--text2)' }}>📍 {g.citySlug}</p>

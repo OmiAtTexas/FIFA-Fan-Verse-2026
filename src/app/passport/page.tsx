@@ -5,18 +5,18 @@ import { useEffect, useState } from 'react';
 import { BottomNav } from '@/components/ui/BottomNav';
 
 const STAMPS = [
-  { id: 1, emoji: '🏟️', title: 'First Match', desc: 'Attend your first World Cup match', color: '#e8003d' },
-  { id: 2, emoji: '🌍', title: 'World Traveler', desc: 'Visit 3 host cities', color: '#7b2fff' },
-  { id: 3, emoji: '🤝', title: 'Fan Connector', desc: 'Connect with 5 fans', color: '#00c2a8' },
-  { id: 4, emoji: '🍕', title: 'Local Foodie', desc: 'Try local food in 2 cities', color: '#ff5c1a' },
-  { id: 5, emoji: '📸', title: 'Photographer', desc: 'Share 3 match day photos', color: '#ffd700' },
-  { id: 6, emoji: '⚽', title: 'Group Stage Fan', desc: 'Watch 3 group stage matches', color: '#00e676' },
-  { id: 7, emoji: '🏆', title: 'Quarter Final Fan', desc: 'Attend a quarter final', color: '#c9a227' },
-  { id: 8, emoji: '🥇', title: 'Final Witness', desc: 'Attend the World Cup Final', color: '#e8003d' },
-  { id: 9, emoji: '🌮', title: 'Mexico Explorer', desc: 'Visit a Mexican host city', color: '#00c2a8' },
-  { id: 10, emoji: '🍁', title: 'Canada Explorer', desc: 'Visit a Canadian host city', color: '#e8003d' },
-  { id: 11, emoji: '🦅', title: 'USA Explorer', desc: 'Visit a US host city', color: '#7b2fff' },
-  { id: 12, emoji: '💬', title: 'Group Member', desc: 'Join a fan group', color: '#00e676' },
+  { id: 1, emoji: '●', title: 'First Match', desc: 'Attend your first World Cup match', color: '#e8003d' },
+  { id: 2, emoji: '●', title: 'World Traveler', desc: 'Visit 3 host cities', color: '#7b2fff' },
+  { id: 3, emoji: '●', title: 'Fan Connector', desc: 'Connect with 5 fans', color: '#00c2a8' },
+  { id: 4, emoji: '●', title: 'Local Foodie', desc: 'Try local food in 2 cities', color: '#ff5c1a' },
+  { id: 5, emoji: '●', title: 'Photographer', desc: 'Share 3 match day photos', color: '#ffd700' },
+  { id: 6, emoji: '●', title: 'Group Stage Fan', desc: 'Watch 3 group stage matches', color: '#00e676' },
+  { id: 7, emoji: '●', title: 'Quarter Final Fan', desc: 'Attend a quarter final', color: '#c9a227' },
+  { id: 8, emoji: '●', title: 'Final Witness', desc: 'Attend the World Cup Final', color: '#e8003d' },
+  { id: 9, emoji: '●', title: 'Mexico Explorer', desc: 'Visit a Mexican host city', color: '#00c2a8' },
+  { id: 10, emoji: '●', title: 'Canada Explorer', desc: 'Visit a Canadian host city', color: '#e8003d' },
+  { id: 11, emoji: '●', title: 'USA Explorer', desc: 'Visit a US host city', color: '#7b2fff' },
+  { id: 12, emoji: '●', title: 'Group Member', desc: 'Join a fan group', color: '#00e676' },
 ];
 
 export default function PassportPage() {
@@ -81,7 +81,7 @@ export default function PassportPage() {
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 10 }}>
               {earned.map(s => (
                 <div key={s.id} style={{ background: `${s.color}15`, border: `1px solid ${s.color}44`, borderRadius: 16, padding: '14px 8px', textAlign: 'center' }}>
-                  <p style={{ fontSize: 32, marginBottom: 6 }}>{s.emoji}</p>
+                  <div style={{ width: 40, height: 40, borderRadius: 12, background: `${s.color}22`, border: `1px solid ${s.color}44`, display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 6px" }}><div style={{ width: 12, height: 12, borderRadius: "50%", background: s.color }}/></div>
                   <p style={{ fontSize: 11, fontWeight: 800, color: s.color }}>{s.title}</p>
                   <p style={{ fontSize: 10, color: 'var(--text3)', marginTop: 3, lineHeight: 1.3 }}>{s.desc}</p>
                 </div>
@@ -117,7 +117,7 @@ export default function PassportPage() {
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 10 }}>
             {notEarned.map(s => (
               <div key={s.id} style={{ background: 'var(--bg2)', border: '1px solid var(--border)', borderRadius: 16, padding: '14px 8px', textAlign: 'center', opacity: 0.5 }}>
-                <p style={{ fontSize: 32, marginBottom: 6, filter: 'grayscale(1)' }}>{s.emoji}</p>
+                <div style={{ width: 40, height: 40, borderRadius: 12, background: "var(--bg3)", border: "1px solid var(--border)", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 6px" }}><div style={{ width: 12, height: 12, borderRadius: "50%", background: "var(--text3)" }}/></div>
                 <p style={{ fontSize: 11, fontWeight: 700, color: 'var(--text2)' }}>{s.title}</p>
                 <p style={{ fontSize: 10, color: 'var(--text3)', marginTop: 3, lineHeight: 1.3 }}>{s.desc}</p>
               </div>

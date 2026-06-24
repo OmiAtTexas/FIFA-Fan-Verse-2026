@@ -84,8 +84,8 @@ export default function GroupsPage() {
             </div>
           </div>
           <div style={{ display: 'flex', gap: 8, marginBottom: 10 }}>
-            <button onClick={() => setTab('city')} style={{ flex: 1, padding: '8px', borderRadius: 10, border: 'none', fontWeight: 700, fontSize: 13, cursor: 'pointer', background: tab === 'city' ? '#00e676' : 'var(--bg3)', color: tab === 'city' ? '#000' : 'var(--text2)' }}>🌍 City Groups</button>
-            <button onClick={() => setTab('private')} style={{ flex: 1, padding: '8px', borderRadius: 10, border: 'none', fontWeight: 700, fontSize: 13, cursor: 'pointer', background: tab === 'private' ? '#00e676' : 'var(--bg3)', color: tab === 'private' ? '#000' : 'var(--text2)' }}>🔒 My Groups</button>
+            <button onClick={() => setTab('city')} style={{ flex: 1, padding: '8px', borderRadius: 10, border: 'none', fontWeight: 700, fontSize: 13, cursor: 'pointer', background: tab === 'city' ? '#00e676' : 'var(--bg3)', color: tab === 'city' ? '#000' : 'var(--text2)' }}>City Groups</button>
+            <button onClick={() => setTab('private')} style={{ flex: 1, padding: '8px', borderRadius: 10, border: 'none', fontWeight: 700, fontSize: 13, cursor: 'pointer', background: tab === 'private' ? '#00e676' : 'var(--bg3)', color: tab === 'private' ? '#000' : 'var(--text2)' }}>My Groups</button>
           </div>
           <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search groups..." className="input" />
         </div>
@@ -111,7 +111,7 @@ export default function GroupsPage() {
       <main style={{ maxWidth: 480, margin: '0 auto', padding: '16px', paddingBottom: 100 }}>
         {tab === 'city' && (
           <div style={{ background: 'rgba(0,230,118,0.08)', border: '1px solid rgba(0,230,118,0.2)', borderRadius: 12, padding: '10px 14px', marginBottom: 14 }}>
-            <p style={{ fontSize: 11, color: '#00e676', fontWeight: 700, marginBottom: 3 }}>📋 Community Guidelines</p>
+            <p style={{ fontSize: 11, color: '#00e676', fontWeight: 700, marginBottom: 3 }}>Community Guidelines</p>
             <p style={{ fontSize: 11, color: 'var(--text2)', lineHeight: 1.5 }}>No racism, hate speech, or abusive language. 3 violations = 24hr ban.</p>
           </div>
         )}
