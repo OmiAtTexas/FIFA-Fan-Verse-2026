@@ -90,7 +90,7 @@ export default function MatchesPage() {
               {dayMatches.map((m: any, idx: number) => {
                 const color = m.isLive ? '#e8003d' : m.isCompleted ? '#7b2fff' : '#0f3066';
                 return (
-                  <div key={m.id} className="card" style={{ borderLeft: `3px solid ${color}` }}>
+                  <div key={m.id} style={{ background: "var(--bg2)", border: "1px solid var(--border)", borderTop: `3px solid ${color}`, borderRadius: "16px", overflow: "hidden" }}>
                     {m.isLive && <div style={{ background: '#e8003d', padding: '5px 14px', display: 'flex', alignItems: 'center', gap: 6 }}><span className="pulse-dot" style={{ width: 6, height: 6, background: 'white', borderRadius: '50%', display: 'inline-block' }}/><span style={{ fontSize: 10, fontWeight: 800, color: 'white', letterSpacing: 1 }}>LIVE · {m.clock}</span></div>}
                     {m.isCompleted && <div style={{ background: 'var(--bg3)', padding: '5px 14px' }}><span style={{ fontSize: 10, fontWeight: 800, color: 'var(--text3)', letterSpacing: 1 }}>FULL TIME</span></div>}
                     <div style={{ padding: '16px' }}>
