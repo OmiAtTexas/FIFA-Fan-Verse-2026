@@ -48,8 +48,8 @@ export default function MatchesPage() {
 
   return (
     <div className="page">
-      <header className="header">
-        <div className="header-inner">
+      <header className="app-header">
+        <div className="app-header-inner">
           <div className="flex items-center justify-between">
             <div>
               <h1 className="fifa-font" style={{ fontSize: 28, color: '#ff5c1a' }}>MATCHES</h1>
