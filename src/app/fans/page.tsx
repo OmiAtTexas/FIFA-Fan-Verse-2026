@@ -85,7 +85,7 @@ export default function FansPage() {
     <div className="page">
       <header className="app-header">
         <div className="app-header-inner">
-          <h1 className="fifa-font" style={{ fontSize: 28, color: '#7b2fff' }}>FIND FANS</h1>
+          <h1 className="fifa-font" style={{ fontSize: 28, color: '#e8003d' }}>FIND FANS</h1>
           <p style={{ fontSize: 9, color: 'var(--text3)', letterSpacing: 3, textTransform: 'uppercase', marginBottom: 10 }}>Connect with fans worldwide</p>
           <div style={{ display: 'flex', gap: 8, marginBottom: tab === 'discover' ? 10 : 0 }}>
             <button onClick={() => setTab('discover')} style={{ flex: 1, padding: '8px', borderRadius: 10, border: 'none', fontWeight: 700, fontSize: 13, cursor: 'pointer', background: tab === 'discover' ? '#7b2fff' : 'var(--bg3)', color: tab === 'discover' ? 'white' : 'var(--text2)' }}>Discover</button>

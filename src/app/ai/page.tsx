@@ -66,7 +66,7 @@ export default function AiPage() {
       <header className="app-header">
         <div className="app-header-inner" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <div>
-            <h1 className="fifa-font" style={{ fontSize: 28, color: '#ffd700' }}>AI GUIDE</h1>
+            <h1 className="fifa-font" style={{ fontSize: 28, color: '#e8003d' }}>AI GUIDE</h1>
             <p style={{ fontSize: 9, color: 'var(--text3)', letterSpacing: 3, textTransform: 'uppercase' }}>World Cup 2026 Companion</p>
           </div>
           <button onClick={clear} style={{ padding: '6px 14px', borderRadius: 10, background: 'var(--bg3)', border: '1px solid var(--border)', color: 'var(--text2)', fontWeight: 700, fontSize: 12, cursor: 'pointer' }}>Clear</button>

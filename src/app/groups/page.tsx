@@ -75,7 +75,7 @@ export default function GroupsPage() {
         <div className="app-header-inner">
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
             <div>
-              <h1 className="fifa-font" style={{ fontSize: 28, color: '#00e676' }}>FAN GROUPS</h1>
+              <h1 className="fifa-font" style={{ fontSize: 28, color: '#e8003d' }}>FAN GROUPS</h1>
               <p style={{ fontSize: 9, color: 'var(--text3)', letterSpacing: 3, textTransform: 'uppercase' }}>Connect with fans in your city</p>
             </div>
             <div style={{ display: 'flex', gap: 8 }}>

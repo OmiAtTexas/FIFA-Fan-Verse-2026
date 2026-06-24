@@ -52,7 +52,7 @@ export default function MatchesPage() {
         <div className="app-header-inner">
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
             <div>
-              <h1 className="fifa-font" style={{ fontSize: 28, color: '#ff5c1a' }}>MATCHES</h1>
+              <h1 className="fifa-font" style={{ fontSize: 28, color: '#e8003d' }}>MATCHES</h1>
               <p style={{ fontSize: 9, color: 'var(--text3)', letterSpacing: 3, textTransform: 'uppercase' }}>FIFA World Cup 2026</p>
             </div>
             <span className="live-badge"><span className="pulse-dot" style={{ width: 6, height: 6, background: 'white', borderRadius: '50%', display: 'inline-block' }}/>LIVE</span>

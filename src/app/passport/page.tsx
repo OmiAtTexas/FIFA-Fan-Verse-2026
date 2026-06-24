@@ -37,7 +37,7 @@ export default function PassportPage() {
     <div className="page">
       <header className="app-header">
         <div className="app-header-inner">
-          <h1 className="fifa-font" style={{ fontSize: 28, color: '#c9a227' }}>MY PASSPORT</h1>
+          <h1 className="fifa-font" style={{ fontSize: 28, color: '#e8003d' }}>MY PASSPORT</h1>
           <p style={{ fontSize: 9, color: 'var(--text3)', letterSpacing: 3, textTransform: 'uppercase' }}>FIFA World Cup 2026 Journey</p>
         </div>
       </header>

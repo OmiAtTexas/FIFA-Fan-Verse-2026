@@ -36,7 +36,7 @@ export default function ProfilePage() {
     <div className="page">
       <header className="app-header">
         <div className="app-header-inner" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <h1 className="fifa-font" style={{ fontSize: 24, color: '#7b2fff' }}>PROFILE</h1>
+          <h1 className="fifa-font" style={{ fontSize: 24, color: '#e8003d' }}>PROFILE</h1>
           <button onClick={() => router.push('/profile/edit')} style={{ background: 'rgba(123,47,255,0.15)', border: '1px solid rgba(123,47,255,0.3)', color: '#7b2fff', borderRadius: 10, padding: '7px 16px', fontWeight: 700, fontSize: 13, cursor: 'pointer' }}>
             Edit Profile
           </button>
