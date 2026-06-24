@@ -1,11 +1,12 @@
 'use client';
 
-import { useSignIn, useSignUp, useAuth } from '@clerk/nextjs';
+import { useSignIn, useSignUp, useAuth, useClerk } from '@clerk/nextjs';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 
 export default function SignInPage() {
   const { isSignedIn } = useAuth();
+  const { setActive } = useClerk();
   const { signIn, isLoaded: signInLoaded } = useSignIn();
   const { signUp, isLoaded: signUpLoaded } = useSignUp();
   const router = useRouter();
@@ -70,11 +71,11 @@ export default function SignInPage() {
       // Try sign in verify first
       try {
         const result = await signIn.attemptFirstFactor({ strategy: 'email_code', code });
-        if (result.status === 'complete') { router.replace('/home'); return; }
+        if (result.status === 'complete') { await setActive({ session: result.createdSessionId }); router.replace('/home'); return; }
       } catch {
         // Try sign up verify
         const result = await signUp.attemptEmailAddressVerification({ code });
-        if (result.status === 'complete') { router.replace('/onboarding'); return; }
+        if (result.status === 'complete') { await setActive({ session: result.createdSessionId }); router.replace('/onboarding'); return; }
       }
     } catch (e: any) {
       setError(e.errors?.[0]?.message || 'Invalid code');
