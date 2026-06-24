@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { BottomNav } from '@/components/ui/BottomNav';
 
-const COLORS = ['#e8003d','#7b2fff','#00c2a8','#ff5c1a','#ffd700','#00e676'];
+
 
 export default function MatchesPage() {
   const [matches, setMatches] = useState<any[]>([]);
@@ -88,7 +88,7 @@ export default function MatchesPage() {
             <p style={{ fontSize: 10, fontWeight: 800, color: 'var(--text3)', letterSpacing: 3, textTransform: 'uppercase', marginBottom: 10 }}>{date}</p>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
               {dayMatches.map((m: any, idx: number) => {
-                const color = COLORS[idx % COLORS.length];
+                const color = m.isLive ? '#e8003d' : m.isCompleted ? '#7b2fff' : '#0f3066';
                 return (
                   <div key={m.id} className="card" style={{ borderLeft: `3px solid ${color}` }}>
                     {m.isLive && <div style={{ background: '#e8003d', padding: '5px 14px', display: 'flex', alignItems: 'center', gap: 6 }}><span className="pulse-dot" style={{ width: 6, height: 6, background: 'white', borderRadius: '50%', display: 'inline-block' }}/><span style={{ fontSize: 10, fontWeight: 800, color: 'white', letterSpacing: 1 }}>LIVE · {m.clock}</span></div>}
