@@ -80,7 +80,7 @@ export default function DMPage({ params }: { params: { id: string } }) {
     });
     // Reload reactions for this message
     const r = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/messages/reactions/${msgId}`);
-    if (r.ok) setReactions(prev => ({ ...prev, [msgId]: await r.json() }));
+    if (r.ok) { const data = await r.json(); setReactions(prev => ({ ...prev, [msgId]: data })); }
   };
 
   return (
