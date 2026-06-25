@@ -108,7 +108,9 @@ export default function PassportPage() {
         setClaimModal(null);
         setPhoto(null);
       } else {
-        setVerifyError('Photo verification failed. ' + getVerificationError(claimModal.id));
+        const errMsg = 'Your photo does not appear to match the requirements for this badge. ' + getVerificationError(claimModal.id);
+        setVerifyError(errMsg);
+        setPhoto(null);
       }
     } catch (e) {
       setVerifyError('Verification failed. Please try again.');
