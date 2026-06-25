@@ -1,23 +1,23 @@
 'use client';
 
 import { useUser, useAuth } from '@clerk/nextjs';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { BottomNav } from '@/components/ui/BottomNav';
 
 const STAMPS = [
-  { id: 'group_member', title: 'Group Member', desc: 'Join a fan group', color: '#00e676', auto: true, icon: 'M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2M9 7a4 4 0 1 0 0 8 4 4 0 0 0 0-8M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75' },
-  { id: 'fan_connector', title: 'Fan Connector', desc: 'Follow 5 fans', color: '#7b2fff', auto: true, icon: 'M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2M12 3a4 4 0 1 0 0 8 4 4 0 0 0 0-8' },
-  { id: 'world_traveler', title: 'World Traveler', desc: 'Add 3+ host cities to your profile', color: '#00c2a8', auto: true, icon: 'M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zM2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z' },
-  { id: 'usa_explorer', title: 'USA Explorer', desc: 'Add a US host city to profile', color: '#e8003d', auto: true, icon: 'M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2zM9 22V12h6v10' },
-  { id: 'canada_explorer', title: 'Canada Explorer', desc: 'Add a Canadian host city to profile', color: '#e8003d', auto: true, icon: 'M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2zM9 22V12h6v10' },
-  { id: 'mexico_explorer', title: 'Mexico Explorer', desc: 'Add a Mexican host city to profile', color: '#00c2a8', auto: true, icon: 'M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2zM9 22V12h6v10' },
-  { id: 'first_match', title: 'First Match', desc: 'Mark that you attended a match', color: '#ff5c1a', auto: false, icon: 'M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zM12 8l4 4-4 4-4-4z' },
-  { id: 'group_stage', title: 'Group Stage Fan', desc: 'Mark attending 3 group stage matches', color: '#ffd700', auto: false, icon: 'M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zM12 8l4 4-4 4-4-4z' },
-  { id: 'quarter_final', title: 'Quarter Final Fan', desc: 'Mark attending a quarter final', color: '#c9a227', auto: false, icon: 'M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zM12 8l4 4-4 4-4-4z' },
-  { id: 'final_witness', title: 'Final Witness', desc: 'Mark attending the World Cup Final', color: '#e8003d', auto: false, icon: 'M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z' },
-  { id: 'local_foodie', title: 'Local Foodie', desc: 'Self-certify trying local food', color: '#ff5c1a', auto: false, icon: 'M18 8h1a4 4 0 0 1 0 8h-1M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8zM6 1v3M10 1v3M14 1v3' },
-  { id: 'photographer', title: 'Photographer', desc: 'Self-certify sharing match day photos', color: '#7b2fff', auto: false, icon: 'M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2zM12 17a4 4 0 1 0 0-8 4 4 0 0 0 0 8z' },
+  { id: 'group_member', title: 'Group Member', desc: 'Join a fan group', color: '#00e676', auto: true, icon: 'M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2M9 7a4 4 0 1 0 0 8 4 4 0 0 0 0-8M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75', actionLabel: 'Join a Group', actionRoute: '/groups' },
+  { id: 'fan_connector', title: 'Fan Connector', desc: 'Follow 5+ fans', color: '#7b2fff', auto: true, icon: 'M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2M12 3a4 4 0 1 0 0 8 4 4 0 0 0 0-8', actionLabel: 'Find Fans', actionRoute: '/fans' },
+  { id: 'world_traveler', title: 'World Traveler', desc: 'Add 3+ host cities to profile', color: '#00c2a8', auto: true, icon: 'M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zM2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z', actionLabel: 'Edit Profile', actionRoute: '/profile/edit' },
+  { id: 'usa_explorer', title: 'USA Explorer', desc: 'Add a US host city to profile', color: '#e8003d', auto: true, icon: 'M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2zM9 22V12h6v10', actionLabel: 'Edit Profile', actionRoute: '/profile/edit' },
+  { id: 'canada_explorer', title: 'Canada Explorer', desc: 'Add a Canadian host city to profile', color: '#e8003d', auto: true, icon: 'M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2zM9 22V12h6v10', actionLabel: 'Edit Profile', actionRoute: '/profile/edit' },
+  { id: 'mexico_explorer', title: 'Mexico Explorer', desc: 'Add a Mexican host city to profile', color: '#00c2a8', auto: true, icon: 'M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2zM9 22V12h6v10', actionLabel: 'Edit Profile', actionRoute: '/profile/edit' },
+  { id: 'first_match', title: 'First Match', desc: 'Attended your first World Cup match', color: '#ff5c1a', auto: false, icon: 'M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zM12 8l4 4-4 4-4-4z', photoPrompt: 'Upload a photo of yourself inside the stadium at the match', photoHint: 'Must show stadium interior or field' },
+  { id: 'group_stage', title: 'Group Stage Fan', desc: 'Attended 3 group stage matches', color: '#ffd700', auto: false, icon: 'M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z', photoPrompt: 'Upload a selfie from inside the stadium during a group stage match', photoHint: 'Must show stadium interior, crowd, or match action' },
+  { id: 'quarter_final', title: 'Quarter Final Fan', desc: 'Attended a quarter final match', color: '#c9a227', auto: false, icon: 'M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z', photoPrompt: 'Upload a photo from inside the stadium at the quarter final', photoHint: 'Must clearly show stadium seating or the pitch' },
+  { id: 'final_witness', title: 'Final Witness', desc: 'Attended the World Cup Final', color: '#e8003d', auto: false, icon: 'M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z', photoPrompt: 'Upload a selfie from inside the stadium at the World Cup Final', photoHint: 'Must show the iconic World Cup Final atmosphere' },
+  { id: 'local_foodie', title: 'Local Foodie', desc: 'Tried local food in a host city', color: '#ff5c1a', auto: false, icon: 'M18 8h1a4 4 0 0 1 0 8h-1M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8zM6 1v3M10 1v3M14 1v3', photoPrompt: 'Upload a photo of you with local food from a host city', photoHint: 'Show yourself with the food — restaurants, food trucks, markets all count' },
+  { id: 'photographer', title: 'Photographer', desc: 'Shared match day photos', color: '#7b2fff', auto: false, icon: 'M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2zM12 17a4 4 0 1 0 0-8 4 4 0 0 0 0 8z', photoPrompt: 'Upload one of your best match day photos', photoHint: 'Show fans, the stadium, the atmosphere — your best shot' },
 ];
 
 const US_CITIES = ['Dallas', 'New York/New Jersey', 'Los Angeles', 'Miami', 'Atlanta', 'Houston', 'Seattle', 'San Francisco Bay Area', 'Boston', 'Philadelphia', 'Kansas City'];
@@ -32,20 +32,18 @@ export default function PassportPage() {
   const [groups, setGroups] = useState<any[]>([]);
   const [claimedStamps, setClaimedStamps] = useState<string[]>([]);
   const [matches, setMatches] = useState<any[]>([]);
-  const [claiming, setClaiming] = useState<string | null>(null);
+  const [claimModal, setClaimModal] = useState<any>(null);
+  const [photo, setPhoto] = useState<string | null>(null);
+  const [uploading, setUploading] = useState(false);
+  const fileRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (!userId) return;
-    // Load claimed stamps from localStorage
     const saved = JSON.parse(localStorage.getItem(`stamps_${userId}`) || '[]');
     setClaimedStamps(saved);
-
-    fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/me`, { headers: { 'x-user-id': userId } })
-      .then(r => r.json()).then(setProfile);
-    fetch(`${process.env.NEXT_PUBLIC_API_URL}/groups`, { headers: { 'x-user-id': userId } })
-      .then(r => r.json()).then(data => setGroups(Array.isArray(data) ? data : []));
-    fetch(`${process.env.NEXT_PUBLIC_API_URL}/matches`)
-      .then(r => r.json()).then(data => setMatches(Array.isArray(data) ? data.slice(0, 3) : []));
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/me`, { headers: { 'x-user-id': userId } }).then(r => r.json()).then(setProfile);
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}/groups`, { headers: { 'x-user-id': userId } }).then(r => r.json()).then(data => setGroups(Array.isArray(data) ? data : []));
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}/matches`).then(r => r.json()).then(data => setMatches(Array.isArray(data) ? data.slice(0, 3) : []));
   }, [userId]);
 
   const isEarned = (stampId: string) => {
@@ -62,26 +60,25 @@ export default function PassportPage() {
     }
   };
 
-  const claim = (stampId: string) => {
-    setClaiming(stampId);
-    setTimeout(() => {
-      const updated = [...claimedStamps, stampId];
-      setClaimedStamps(updated);
-      localStorage.setItem(`stamps_${userId}`, JSON.stringify(updated));
-      setClaiming(null);
-    }, 800);
+  const handlePhoto = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => setPhoto(reader.result as string);
+    reader.readAsDataURL(file);
   };
 
-  const getActionLabel = (stamp: any) => {
-    switch (stamp.id) {
-      case 'group_member': return { label: 'Join a Group', action: () => router.push('/groups') };
-      case 'fan_connector': return { label: 'Find Fans', action: () => router.push('/fans') };
-      case 'world_traveler': return { label: 'Edit Profile', action: () => router.push('/profile/edit') };
-      case 'usa_explorer': return { label: 'Edit Profile', action: () => router.push('/profile/edit') };
-      case 'canada_explorer': return { label: 'Edit Profile', action: () => router.push('/profile/edit') };
-      case 'mexico_explorer': return { label: 'Edit Profile', action: () => router.push('/profile/edit') };
-      default: return { label: 'Claim Badge', action: () => claim(stamp.id) };
-    }
+  const submitClaim = () => {
+    if (!photo || !claimModal) return;
+    setUploading(true);
+    setTimeout(() => {
+      const updated = [...claimedStamps, claimModal.id];
+      setClaimedStamps(updated);
+      localStorage.setItem(`stamps_${userId}`, JSON.stringify(updated));
+      setUploading(false);
+      setClaimModal(null);
+      setPhoto(null);
+    }, 1000);
   };
 
   const earnedStamps = STAMPS.filter(s => isEarned(s.id));
@@ -95,6 +92,58 @@ export default function PassportPage() {
           <p style={{ fontSize: 9, color: 'var(--text3)', letterSpacing: 3, textTransform: 'uppercase' }}>FIFA World Cup 2026 Journey</p>
         </div>
       </header>
+
+      {/* Photo upload modal */}
+      {claimModal && (
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.95)', zIndex: 200, display: 'flex', flexDirection: 'column', padding: 24 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 24 }}>
+            <button onClick={() => { setClaimModal(null); setPhoto(null); }} style={{ background: 'none', border: 'none', color: 'white', fontSize: 24, cursor: 'pointer', padding: 0 }}>←</button>
+            <h2 style={{ fontSize: 20, fontWeight: 900, color: 'white' }}>Claim: {claimModal.title}</h2>
+          </div>
+
+          <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 20 }}>
+            <div style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 16, padding: 16 }}>
+              <p style={{ fontSize: 14, color: 'white', fontWeight: 700, marginBottom: 6 }}>📸 Photo Required</p>
+              <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.7)', lineHeight: 1.5 }}>{claimModal.photoPrompt}</p>
+              <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.4)', marginTop: 8, fontStyle: 'italic' }}>{claimModal.photoHint}</p>
+            </div>
+
+            {/* Photo upload area */}
+            <div
+              onClick={() => fileRef.current?.click()}
+              style={{ border: `2px dashed ${photo ? claimModal.color : 'rgba(255,255,255,0.2)'}`, borderRadius: 20, height: 240, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', overflow: 'hidden', position: 'relative' }}>
+              {photo ? (
+                <img src={photo} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+              ) : (
+                <div style={{ textAlign: 'center' }}>
+                  <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.3)" strokeWidth="1.5" style={{ margin: '0 auto 12px', display: 'block' }}>
+                    <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
+                    <circle cx="12" cy="13" r="4"/>
+                  </svg>
+                  <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: 14 }}>Tap to upload photo</p>
+                  <p style={{ color: 'rgba(255,255,255,0.2)', fontSize: 11, marginTop: 4 }}>JPG, PNG up to 10MB</p>
+                </div>
+              )}
+            </div>
+            <input ref={fileRef} type="file" accept="image/*" onChange={handlePhoto} style={{ display: 'none' }} />
+
+            {photo && (
+              <button onClick={() => fileRef.current?.click()} style={{ background: 'none', border: '1px solid rgba(255,255,255,0.2)', color: 'rgba(255,255,255,0.6)', padding: '8px', borderRadius: 10, fontSize: 13, cursor: 'pointer' }}>
+                Change Photo
+              </button>
+            )}
+
+            <div style={{ marginTop: 'auto' }}>
+              <button
+                onClick={submitClaim}
+                disabled={!photo || uploading}
+                style={{ width: '100%', padding: '16px', borderRadius: 16, border: 'none', background: photo ? claimModal.color : 'rgba(255,255,255,0.1)', color: claimModal.color === '#ffd700' || claimModal.color === '#c9a227' ? '#000' : 'white', fontWeight: 900, fontSize: 16, cursor: photo ? 'pointer' : 'default', opacity: uploading ? 0.7 : 1 }}>
+                {uploading ? 'Awarding badge...' : photo ? 'Submit & Claim Badge' : 'Upload a photo to continue'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       <main className="inner" style={{ paddingBottom: 100 }}>
         {/* Passport Card */}
@@ -172,28 +221,25 @@ export default function PassportPage() {
         <section>
           <p className="section-label">Earn More Stamps</p>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-            {unearnedStamps.map(s => {
-              const { label, action } = getActionLabel(s);
-              return (
-                <div key={s.id} className="card" style={{ padding: '14px 16px', display: 'flex', alignItems: 'center', gap: 14 }}>
-                  <div style={{ width: 48, height: 48, borderRadius: 14, background: 'var(--bg3)', border: '1px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--text3)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      {s.icon.split('M').filter(Boolean).map((seg: string, i: number) => <path key={i} d={'M' + seg} />)}
-                    </svg>
-                  </div>
-                  <div style={{ flex: 1 }}>
-                    <p style={{ fontWeight: 700, fontSize: 14 }}>{s.title}</p>
-                    <p style={{ fontSize: 12, color: 'var(--text2)', marginTop: 2 }}>{s.desc}</p>
-                  </div>
-                  <button
-                    onClick={action}
-                    disabled={claiming === s.id}
-                    style={{ padding: '8px 14px', borderRadius: 10, background: s.color, color: s.id === 'final_witness' || s.color === '#ffd700' || s.color === '#c9a227' ? '#000' : 'white', fontWeight: 700, fontSize: 12, border: 'none', cursor: 'pointer', flexShrink: 0, opacity: claiming === s.id ? 0.6 : 1 }}>
-                    {claiming === s.id ? '...' : label}
-                  </button>
+            {unearnedStamps.map(s => (
+              <div key={s.id} className="card" style={{ padding: '14px 16px', display: 'flex', alignItems: 'center', gap: 14 }}>
+                <div style={{ width: 48, height: 48, borderRadius: 14, background: 'var(--bg3)', border: '1px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--text3)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    {s.icon.split('M').filter(Boolean).map((seg: string, i: number) => <path key={i} d={'M' + seg} />)}
+                  </svg>
                 </div>
-              );
-            })}
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <p style={{ fontWeight: 700, fontSize: 14 }}>{s.title}</p>
+                  <p style={{ fontSize: 12, color: 'var(--text2)', marginTop: 2, lineHeight: 1.4 }}>{s.desc}</p>
+                  {!s.auto && <p style={{ fontSize: 10, color: 'var(--text3)', marginTop: 4 }}>📸 Photo proof required</p>}
+                </div>
+                <button
+                  onClick={() => s.auto ? router.push(s.actionRoute!) : setClaimModal(s)}
+                  style={{ padding: '8px 12px', borderRadius: 10, background: s.color, color: s.color === '#ffd700' || s.color === '#c9a227' ? '#000' : 'white', fontWeight: 700, fontSize: 11, border: 'none', cursor: 'pointer', flexShrink: 0, whiteSpace: 'nowrap' }}>
+                  {s.auto ? s.actionLabel : 'Claim'}
+                </button>
+              </div>
+            ))}
           </div>
         </section>
       </main>
