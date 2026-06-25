@@ -81,7 +81,7 @@ export default function PassportPage() {
       const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
         method: 'POST',
         headers: {
-          'Authorization': 'Bearer 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',
+          'Authorization': `Bearer ${process.env.NEXT_PUBLIC_GROQ_API_KEY}`,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
