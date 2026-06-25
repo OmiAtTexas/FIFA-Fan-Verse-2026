@@ -68,17 +68,75 @@ export default function PassportPage() {
     reader.readAsDataURL(file);
   };
 
-  const submitClaim = () => {
+  const [verifyError, setVerifyError] = useState('');
+
+  const submitClaim = async () => {
     if (!photo || !claimModal) return;
     setUploading(true);
-    setTimeout(() => {
-      const updated = [...claimedStamps, claimModal.id];
-      setClaimedStamps(updated);
-      localStorage.setItem(`stamps_${userId}`, JSON.stringify(updated));
-      setUploading(false);
-      setClaimModal(null);
-      setPhoto(null);
-    }, 1000);
+    setVerifyError('');
+
+    try {
+      // Send photo to Groq vision for verification
+      const verificationPrompt = getVerificationPrompt(claimModal.id);
+      const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Authorization': 'Bearer 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',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          model: 'llama-3.2-11b-vision-preview',
+          messages: [{
+            role: 'user',
+            content: [
+              { type: 'text', text: verificationPrompt },
+              { type: 'image_url', image_url: { url: photo } }
+            ]
+          }],
+          max_tokens: 50,
+        }),
+      });
+
+      const data = await response.json();
+      const answer = data.choices?.[0]?.message?.content?.toLowerCase() || '';
+
+      if (answer.includes('yes')) {
+        const updated = [...claimedStamps, claimModal.id];
+        setClaimedStamps(updated);
+        localStorage.setItem(`stamps_${userId}`, JSON.stringify(updated));
+        setClaimModal(null);
+        setPhoto(null);
+      } else {
+        setVerifyError('Photo verification failed. ' + getVerificationError(claimModal.id));
+      }
+    } catch (e) {
+      setVerifyError('Verification failed. Please try again.');
+    }
+    setUploading(false);
+  };
+
+  const getVerificationPrompt = (stampId: string) => {
+    const prompts: Record<string, string> = {
+      first_match: 'Does this photo show a person inside a sports stadium or arena watching a live event? Answer only YES or NO.',
+      group_stage: 'Does this photo show a person inside a sports stadium or arena watching a live match? Answer only YES or NO.',
+      quarter_final: 'Does this photo show a person inside a sports stadium watching a live football or soccer match? Answer only YES or NO.',
+      final_witness: 'Does this photo show a person inside a large sports stadium at a major event? Answer only YES or NO.',
+      local_foodie: 'Does this photo show food or a person eating food at a restaurant or food stall? Answer only YES or NO.',
+      photographer: 'Does this photo show a sports stadium, football match, or large crowd at a sporting event? Answer only YES or NO.',
+    };
+    return prompts[stampId] || 'Is this a real photo relevant to a World Cup event? Answer only YES or NO.';
+  };
+
+  const getVerificationError = (stampId: string) => {
+    const errors: Record<string, string> = {
+      first_match: 'Please upload a photo showing you inside a stadium.',
+      group_stage: 'Please upload a clear photo from inside the stadium.',
+      quarter_final: 'Photo must show stadium interior or match action.',
+      final_witness: 'Photo must clearly show you were at the stadium.',
+      local_foodie: 'Please upload a photo showing local food.',
+      photographer: 'Please upload a photo showing the stadium or match.',
+    };
+    return errors[stampId] || 'Please upload a valid photo.';
   };
 
   const earnedStamps = STAMPS.filter(s => isEarned(s.id));
@@ -138,7 +196,7 @@ export default function PassportPage() {
                 onClick={submitClaim}
                 disabled={!photo || uploading}
                 style={{ width: '100%', padding: '16px', borderRadius: 16, border: 'none', background: photo ? claimModal.color : 'rgba(255,255,255,0.1)', color: claimModal.color === '#ffd700' || claimModal.color === '#c9a227' ? '#000' : 'white', fontWeight: 900, fontSize: 16, cursor: photo ? 'pointer' : 'default', opacity: uploading ? 0.7 : 1 }}>
-                {uploading ? 'Awarding badge...' : photo ? 'Submit & Claim Badge' : 'Upload a photo to continue'}
+                {uploading ? 'Verifying photo...' : photo ? 'Submit & Claim Badge' : 'Upload a photo to continue'}
               </button>
             </div>
           </div>
@@ -234,7 +292,7 @@ export default function PassportPage() {
                   {!s.auto && <p style={{ fontSize: 10, color: 'var(--text3)', marginTop: 4 }}>📸 Photo proof required</p>}
                 </div>
                 <button
-                  onClick={() => s.auto ? router.push(s.actionRoute!) : setClaimModal(s)}
+                  onClick={() => s.auto ? router.push(s.actionRoute!) : (setClaimModal(s), setVerifyError(''), setPhoto(null))}
                   style={{ padding: '8px 12px', borderRadius: 10, background: s.color, color: s.color === '#ffd700' || s.color === '#c9a227' ? '#000' : 'white', fontWeight: 700, fontSize: 11, border: 'none', cursor: 'pointer', flexShrink: 0, whiteSpace: 'nowrap' }}>
                   {s.auto ? s.actionLabel : 'Claim'}
                 </button>
