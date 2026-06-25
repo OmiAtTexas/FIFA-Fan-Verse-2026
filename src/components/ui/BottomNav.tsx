@@ -19,57 +19,62 @@ export function BottomNav() {
   const pathname = usePathname();
   const { userId } = useAuth();
   const [dmUnread, setDmUnread] = useState(false);
-  const [groupUnread, setGroupUnread] = useState(false);
   const [notifUnread, setNotifUnread] = useState(false);
 
   useEffect(() => {
     if (!userId) return;
 
-    const checkUnread = async () => {
+    const checkDmUnread = async () => {
       try {
-        // Check DM unread
-        const dmLastSeen = parseInt(localStorage.getItem('dm_last_seen') || '0');
-        const dmRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/messages/conversations`, { headers: { 'x-user-id': userId } });
-        if (dmRes.ok) {
-          const convs = await dmRes.json();
-          const hasUnread = Array.isArray(convs) && convs.some((c: any) => c.lastMessage && new Date(c.lastMessage.createdAt).getTime() > dmLastSeen && c.lastMessage.senderClerkId !== userId);
-          setDmUnread(hasUnread);
-        }
-      } catch (e) {}
-
-      try {
-        // Check notifications unread
-        const lastSeen = parseInt(localStorage.getItem('notif_last_seen') || '0');
-        const dismissed = JSON.parse(localStorage.getItem('dismissed_notifs') || '[]');
-        const nRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/notifications`, { headers: { 'x-user-id': userId } });
-        if (nRes.ok) {
-          const notifs = await nRes.json();
-          const unseen = Array.isArray(notifs) && notifs.filter((n: any) => !dismissed.includes(n.id) && new Date(n.createdAt).getTime() > lastSeen);
-          setNotifUnread(Array.isArray(unseen) && unseen.length > 0);
-        }
+        const readMap = JSON.parse(localStorage.getItem('dm_read_map') || '{}');
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/messages/conversations`, { headers: { 'x-user-id': userId } });
+        if (!res.ok) return;
+        const convs = await res.json();
+        if (!Array.isArray(convs)) return;
+        const hasUnread = convs.some((c: any) => {
+          if (!c.lastMessageAt || !c.lastMessage) return false;
+          if (c.lastMessageSenderClerkId === userId) return false;
+          const lastRead = readMap[c.id];
+          if (!lastRead) return true;
+          return new Date(c.lastMessageAt) > new Date(lastRead);
+        });
+        setDmUnread(hasUnread);
       } catch (e) {}
     };
 
-    checkUnread();
-    const i = setInterval(checkUnread, 15000);
+    const checkNotifUnread = async () => {
+      try {
+        const lastSeen = parseInt(localStorage.getItem('notif_last_seen') || '0');
+        const dismissed = JSON.parse(localStorage.getItem('dismissed_notifs') || '[]');
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/notifications`, { headers: { 'x-user-id': userId } });
+        if (!res.ok) return;
+        const notifs = await res.json();
+        if (!Array.isArray(notifs)) return;
+        const hasUnread = notifs.some((n: any) => !dismissed.includes(n.id) && new Date(n.createdAt).getTime() > lastSeen);
+        setNotifUnread(hasUnread);
+      } catch (e) {}
+    };
+
+    checkDmUnread();
+    checkNotifUnread();
+    const i = setInterval(() => { checkDmUnread(); checkNotifUnread(); }, 10000);
     return () => clearInterval(i);
   }, [userId]);
 
-  // Clear dots when visiting those pages
   useEffect(() => {
     if (pathname.startsWith('/messages')) {
-      localStorage.setItem('dm_last_seen', Date.now().toString());
       setDmUnread(false);
+      localStorage.setItem('dm_last_seen', Date.now().toString());
     }
     if (pathname.startsWith('/notifications')) {
-      localStorage.setItem('notif_last_seen', Date.now().toString());
       setNotifUnread(false);
+      localStorage.setItem('notif_last_seen', Date.now().toString());
     }
   }, [pathname]);
 
   const getDot = (href: string) => {
-    if (href === '/messages' && dmUnread) return true;
-    if (href === '/home' && notifUnread) return true;
+    if (href === '/messages') return dmUnread;
+    if (href === '/home') return notifUnread;
     return false;
   };
 
@@ -79,17 +84,10 @@ export function BottomNav() {
         const active = pathname === href || pathname.startsWith(href + '/');
         const hasDot = getDot(href);
         return (
-          <Link key={href} href={href} style={{
-            display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2,
-            padding: '4px 6px', borderRadius: 10, textDecoration: 'none',
-            background: active ? `${color}25` : 'transparent',
-            transition: 'all 0.2s', minWidth: 36, position: 'relative',
-          }}>
+          <Link key={href} href={href} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2, padding: '4px 6px', borderRadius: 10, textDecoration: 'none', background: active ? `${color}25` : 'transparent', transition: 'all 0.2s', minWidth: 36, position: 'relative' }}>
             <div style={{ position: 'relative' }}>
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={active ? color : 'var(--text3)'} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                {d.split('M').filter(Boolean).map((seg, i) => (
-                  <path key={i} d={'M' + seg} />
-                ))}
+                {d.split('M').filter(Boolean).map((seg, i) => <path key={i} d={'M' + seg} />)}
               </svg>
               {hasDot && <span style={{ position: 'absolute', top: -2, right: -2, width: 7, height: 7, borderRadius: '50%', background: '#e8003d', border: '1.5px solid var(--bg)' }} />}
             </div>
