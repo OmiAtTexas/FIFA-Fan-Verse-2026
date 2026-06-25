@@ -57,14 +57,19 @@ export default function MatchesPage() {
             </div>
             <span className="live-badge"><span className="pulse-dot" style={{ width: 6, height: 6, background: 'white', borderRadius: '50%', display: 'inline-block' }}/>LIVE</span>
           </div>
-          <div className="scrollbar-hide" style={{ overflowX: 'auto', marginTop: 12, paddingBottom: 4 }}>
-            <button onClick={() => setSelectedDate('')} className="pill" style={{ background: selectedDate === '' ? '#e8003d' : 'var(--bg3)', color: selectedDate === '' ? 'white' : '#888', borderColor: selectedDate === '' ? '#e8003d' : 'var(--border)', flexShrink: 0 }}>Today</button>
+          <div className="scrollbar-hide" style={{ overflowX: 'auto', marginTop: 14, paddingBottom: 4, display: 'flex', gap: 8 }}>
+            <button onClick={() => setSelectedDate('')} style={{ flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2, padding: '8px 14px', borderRadius: 12, border: 'none', cursor: 'pointer', background: selectedDate === '' ? '#e8003d' : 'var(--bg3)', minWidth: 52 }}>
+              <span style={{ fontSize: 9, fontWeight: 700, color: selectedDate === '' ? 'rgba(255,255,255,0.7)' : 'var(--text3)', letterSpacing: 1 }}>TODAY</span>
+              <span style={{ fontSize: 18, fontWeight: 900, color: selectedDate === '' ? 'white' : 'var(--text)', lineHeight: 1 }}>{new Date().getDate()}</span>
+            </button>
             {getDates().map(d => {
               const key = formatDate(d);
-              const label = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
               const active = selectedDate === key;
               return (
-                <button key={key} onClick={() => setSelectedDate(key)} className="pill" style={{ background: active ? '#e8003d' : 'var(--bg3)', color: active ? 'white' : '#888', borderColor: active ? '#e8003d' : 'var(--border)', flexShrink: 0 }}>{label}</button>
+                <button key={key} onClick={() => setSelectedDate(key)} style={{ flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2, padding: '8px 14px', borderRadius: 12, border: 'none', cursor: 'pointer', background: active ? '#e8003d' : 'var(--bg3)', minWidth: 52 }}>
+                  <span style={{ fontSize: 9, fontWeight: 700, color: active ? 'rgba(255,255,255,0.7)' : 'var(--text3)', letterSpacing: 1, textTransform: 'uppercase' }}>{d.toLocaleDateString('en-US', { month: 'short' })}</span>
+                  <span style={{ fontSize: 18, fontWeight: 900, color: active ? 'white' : 'var(--text)', lineHeight: 1 }}>{d.getDate()}</span>
+                </button>
               );
             })}
           </div>
