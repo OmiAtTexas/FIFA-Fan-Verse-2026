@@ -100,7 +100,8 @@ export default function PassportPage() {
       const data = await response.json();
       const answer = data.choices?.[0]?.message?.content?.toLowerCase() || '';
 
-      if (answer.includes('yes')) {
+      const trimmed = answer.trim().toLowerCase().replace(/[^a-z]/g, '');
+      if (trimmed === 'yes' || trimmed.startsWith('yes')) {
         const updated = [...claimedStamps, claimModal.id];
         setClaimedStamps(updated);
         localStorage.setItem(`stamps_${userId}`, JSON.stringify(updated));
@@ -117,14 +118,14 @@ export default function PassportPage() {
 
   const getVerificationPrompt = (stampId: string) => {
     const prompts: Record<string, string> = {
-      first_match: 'Does this photo show a person inside a sports stadium or arena watching a live event? Answer only YES or NO.',
-      group_stage: 'Does this photo show a person inside a sports stadium or arena watching a live match? Answer only YES or NO.',
-      quarter_final: 'Does this photo show a person inside a sports stadium watching a live football or soccer match? Answer only YES or NO.',
-      final_witness: 'Does this photo show a person inside a large sports stadium at a major event? Answer only YES or NO.',
-      local_foodie: 'Does this photo show food or a person eating food at a restaurant or food stall? Answer only YES or NO.',
-      photographer: 'Does this photo show a sports stadium, football match, or large crowd at a sporting event? Answer only YES or NO.',
+      first_match: 'You are a strict photo verifier. Look at this image carefully. Does it CLEARLY show the INSIDE of a sports stadium with visible seating rows, a pitch/field, or stadium structure? A selfie in a stadium counts only if stadium interior is clearly visible behind the person. Reply with ONLY the single word YES or NO. No explanation.',
+      group_stage: 'You are a strict photo verifier. Look at this image carefully. Does it CLEARLY show the INSIDE of a sports stadium with visible seating rows, a pitch/field, or large crowd inside a stadium? Reply with ONLY the single word YES or NO. No explanation.',
+      quarter_final: 'You are a strict photo verifier. Does this image CLEARLY show stadium interior seating, a football pitch, or a large crowd inside a sports stadium? A random photo of people or outdoors does NOT count. Reply with ONLY the single word YES or NO. No explanation.',
+      final_witness: 'You are a strict photo verifier. Does this image CLEARLY show the inside of a major sports stadium with thousands of fans, stadium seating, or a football pitch? Reply with ONLY the single word YES or NO. No explanation.',
+      local_foodie: 'You are a strict photo verifier. Does this image show ACTUAL FOOD — a meal, dish, street food, or food item? A photo of people without food, or scenery, does NOT count. Reply with ONLY the single word YES or NO. No explanation.',
+      photographer: 'You are a strict photo verifier. Does this image show a sports stadium interior, football match in progress, or large crowd at a sporting event? A selfie or random photo does NOT count. Reply with ONLY the single word YES or NO. No explanation.',
     };
-    return prompts[stampId] || 'Is this a real photo relevant to a World Cup event? Answer only YES or NO.';
+    return prompts[stampId] || 'You are a strict verifier. Is this photo clearly relevant to a FIFA World Cup event? Reply with ONLY YES or NO.';
   };
 
   const getVerificationError = (stampId: string) => {
