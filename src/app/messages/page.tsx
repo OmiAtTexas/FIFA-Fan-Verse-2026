@@ -8,7 +8,7 @@ export default function MessagesPage() {
   const { userId } = useAuth();
   const [conversations, setConversations] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [readMap, setReadMap] = useState<Record<string, string>>({});
+  const [readMap, setReadMap] = useState<{[key: string]: string}>({});
 
   const load = () => {
     if (!userId) return;
@@ -20,7 +20,6 @@ export default function MessagesPage() {
   };
 
   useEffect(() => {
-    // Load read timestamps from localStorage
     try {
       const saved = JSON.parse(localStorage.getItem('dm_read_map') || '{}');
       setReadMap(saved);
@@ -34,14 +33,12 @@ export default function MessagesPage() {
     const updated = { ...readMap, [convId]: lastMsgAt };
     setReadMap(updated);
     localStorage.setItem('dm_read_map', JSON.stringify(updated));
-    // Also update global dm_last_seen for bottom nav dot
     localStorage.setItem('dm_last_seen', Date.now().toString());
   };
 
   const isUnread = (conv: any) => {
     if (!conv.lastMessageAt) return false;
     if (!conv.lastMessage) return false;
-    // If last message was from me, not unread
     if (conv.lastMessageSenderClerkId === userId) return false;
     const lastRead = readMap[conv.id];
     if (!lastRead) return true;
@@ -79,40 +76,20 @@ export default function MessagesPage() {
           {conversations.map((c: any) => {
             const unread = isUnread(c);
             return (
-              
-                key={c.id}
-                href={`/messages/${c.id}`}
-                onClick={() => markRead(c.id, c.lastMessageAt)}
-                className="card"
-                style={{ padding: '14px 16px', display: 'flex', alignItems: 'center', gap: 14, textDecoration: 'none', borderLeft: `3px solid ${unread ? '#e8003d' : '#00c2a8'}`, position: 'relative' }}
-              >
-                {/* Avatar */}
+              <a key={c.id} href={`/messages/${c.id}`} onClick={() => markRead(c.id, c.lastMessageAt)} className="card" style={{ padding: '14px 16px', display: 'flex', alignItems: 'center', gap: 14, textDecoration: 'none', borderLeft: `3px solid ${unread ? '#e8003d' : '#00c2a8'}` }}>
                 <div style={{ position: 'relative', flexShrink: 0 }}>
                   <div className="avatar" style={{ width: 50, height: 50, fontSize: 20, border: `2px solid ${unread ? '#e8003d44' : '#00c2a844'}` }}>
                     {c.other?.avatarUrl ? <img src={c.other.avatarUrl} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : c.other?.displayName?.[0] || '?'}
                   </div>
-                  {/* Unread dot on avatar */}
-                  {unread && (
-                    <div style={{ position: 'absolute', bottom: 1, right: 1, width: 12, height: 12, borderRadius: '50%', background: '#e8003d', border: '2px solid var(--bg2)' }} />
-                  )}
+                  {unread && <div style={{ position: 'absolute', bottom: 1, right: 1, width: 12, height: 12, borderRadius: '50%', background: '#e8003d', border: '2px solid var(--bg2)' }} />}
                 </div>
-
                 <div style={{ flex: 1, minWidth: 0 }}>
-                  <p style={{ fontWeight: unread ? 900 : 700, fontSize: 15, color: unread ? 'var(--text)' : 'var(--text)' }}>{c.other?.displayName || 'Fan'}</p>
-                  <p style={{ fontSize: 12, color: unread ? 'var(--text2)' : 'var(--text3)', marginTop: 3, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontWeight: unread ? 700 : 400 }}>
-                    {c.lastMessage || 'Say hello!'}
-                  </p>
+                  <p style={{ fontWeight: unread ? 900 : 700, fontSize: 15 }}>{c.other?.displayName || 'Fan'}</p>
+                  <p style={{ fontSize: 12, color: unread ? 'var(--text2)' : 'var(--text3)', marginTop: 3, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontWeight: unread ? 700 : 400 }}>{c.lastMessage || 'Say hello!'}</p>
                 </div>
-
                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 6, flexShrink: 0 }}>
-                  {c.lastMessageAt && (
-                    <p style={{ fontSize: 10, color: unread ? '#e8003d' : 'var(--text3)', fontWeight: unread ? 700 : 400 }}>
-                      {new Date(c.lastMessageAt).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}
-                    </p>
-                  )}
-                  {unread && (
-                    <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#e8003d' }} />
-                  )}
+                  {c.lastMessageAt && <p style={{ fontSize: 10, color: unread ? '#e8003d' : 'var(--text3)', fontWeight: unread ? 700 : 400 }}>{new Date(c.lastMessageAt).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}</p>}
+                  {unread && <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#e8003d' }} />}
                 </div>
               </a>
             );
