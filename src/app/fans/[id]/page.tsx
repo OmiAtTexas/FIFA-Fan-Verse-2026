@@ -78,8 +78,14 @@ export default function FanProfilePage({ params }: { params: { id: string } }) {
           </div>
           {fan.bio && <p style={{ fontSize: 14, color: 'var(--text2)', lineHeight: 1.5, marginBottom: 12 }}>{fan.bio}</p>}
           <div style={{ display: 'flex', justifyContent: 'center', gap: 32, marginBottom: 16 }}>
-            <div><p style={{ fontSize: 22, fontWeight: 900 }}>{fan._count?.followers || 0}</p><p style={{ fontSize: 11, color: 'var(--text3)' }}>Followers</p></div>
-            <div><p style={{ fontSize: 22, fontWeight: 900 }}>{fan._count?.following || 0}</p><p style={{ fontSize: 11, color: 'var(--text3)' }}>Following</p></div>
+            <div style={{ cursor: 'pointer', textAlign: 'center' }} onClick={() => router.push(`/fans/${params.id}/followers`)}>
+              <p style={{ fontSize: 22, fontWeight: 900 }}>{fan._count?.followers || 0}</p>
+              <p style={{ fontSize: 11, color: 'var(--text3)' }}>Followers</p>
+            </div>
+            <div style={{ cursor: 'pointer', textAlign: 'center' }} onClick={() => router.push(`/fans/${params.id}/following`)}>
+              <p style={{ fontSize: 22, fontWeight: 900 }}>{fan._count?.following || 0}</p>
+              <p style={{ fontSize: 11, color: 'var(--text3)' }}>Following</p>
+            </div>
           </div>
 
           {!isMe && (

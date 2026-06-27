@@ -55,12 +55,12 @@ export default function ProfilePage() {
           </div>
           {profile?.bio && <p style={{ fontSize: 14, color: 'var(--text2)', lineHeight: 1.5, marginBottom: 12 }}>{profile.bio}</p>}
           <div style={{ display: 'flex', justifyContent: 'center', gap: 32, marginTop: 12 }}>
-            <div style={{ textAlign: 'center' }}>
+            <div style={{ textAlign: 'center', cursor: 'pointer' }} onClick={() => profile?.id && router.push(`/fans/${profile.id}/followers`)}>
               <p style={{ fontSize: 22, fontWeight: 900, color: 'white' }}>{profile?._count?.followers || 0}</p>
               <p style={{ fontSize: 11, color: 'var(--text3)', letterSpacing: 1 }}>FOLLOWERS</p>
             </div>
             <div style={{ width: 1, background: 'var(--border)' }} />
-            <div style={{ textAlign: 'center' }}>
+            <div style={{ textAlign: 'center', cursor: 'pointer' }} onClick={() => profile?.id && router.push(`/fans/${profile.id}/following`)}>
               <p style={{ fontSize: 22, fontWeight: 900, color: 'white' }}>{profile?._count?.following || 0}</p>
               <p style={{ fontSize: 11, color: 'var(--text3)', letterSpacing: 1 }}>FOLLOWING</p>
             </div>
