@@ -53,7 +53,18 @@ export default function ProfilePage() {
             {profile?.nationality && <span style={{ fontSize: 13, color: 'var(--text2)' }}>🌍 {profile.nationality}</span>}
             {profile?.supportedTeam && <span style={{ fontSize: 13, color: '#7b2fff', fontWeight: 700 }}>⚽ {profile.supportedTeam}</span>}
           </div>
-          {profile?.bio && <p style={{ fontSize: 14, color: 'var(--text2)', lineHeight: 1.5 }}>{profile.bio}</p>}
+          {profile?.bio && <p style={{ fontSize: 14, color: 'var(--text2)', lineHeight: 1.5, marginBottom: 12 }}>{profile.bio}</p>}
+          <div style={{ display: 'flex', justifyContent: 'center', gap: 32, marginTop: 12 }}>
+            <div style={{ textAlign: 'center' }}>
+              <p style={{ fontSize: 22, fontWeight: 900, color: 'white' }}>{profile?._count?.followers || 0}</p>
+              <p style={{ fontSize: 11, color: 'var(--text3)', letterSpacing: 1 }}>FOLLOWERS</p>
+            </div>
+            <div style={{ width: 1, background: 'var(--border)' }} />
+            <div style={{ textAlign: 'center' }}>
+              <p style={{ fontSize: 22, fontWeight: 900, color: 'white' }}>{profile?._count?.following || 0}</p>
+              <p style={{ fontSize: 11, color: 'var(--text3)', letterSpacing: 1 }}>FOLLOWING</p>
+            </div>
+          </div>
         </div>
 
         {profile?.interests?.length > 0 && (
