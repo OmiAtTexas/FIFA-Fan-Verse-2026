@@ -21,8 +21,8 @@ export default function EditProfilePage() {
   const fileRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    if (!userId) return;
-    fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/me`, { headers: { 'x-user-id': userId } })
+    if (!user) return;
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/me`, { headers: { 'x-user-id': user.id } })
       .then(r => r.json()).then(data => {
         if (data) setForm({
           displayName: data.displayName || `${user?.firstName || ''} ${user?.lastName || ''}`.trim(),
@@ -33,7 +33,7 @@ export default function EditProfilePage() {
           hostCities: data.hostCities || [],
         });
       });
-  }, [userId, user]);
+  }, [user]);
 
   const handlePhoto = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -49,7 +49,7 @@ export default function EditProfilePage() {
     if (photoFile) await user?.setProfileImage({ file: photoFile });
     await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users/me`, {
       method: 'PATCH',
-      headers: { 'Content-Type': 'application/json', 'x-user-id': userId || '' },
+      headers: { 'Content-Type': 'application/json', 'x-user-id': user?.id || '' },
       body: JSON.stringify(form),
     });
     setSaving(false);
