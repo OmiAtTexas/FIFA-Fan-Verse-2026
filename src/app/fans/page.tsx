@@ -104,7 +104,7 @@ export default function FansPage() {
             {followRequests.map((req: any) => (
               <div key={req.id} className="card" style={{ padding: 16 }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 12 }} onClick={() => router.push(`/fans/${req.from?.id}`)}>
-                  <div className="avatar" style={{ width: 50, height: 50, fontSize: 20, border: '2px solid #7b2fff', cursor: 'pointer' }}>
+                  <div style={{ width: 50, height: 50, borderRadius: '50%', overflow: 'hidden', flexShrink: 0, background: 'var(--bg3)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20, fontWeight: 800, color: 'var(--text2)', cursor: 'pointer' }}>
                     {req.from?.avatarUrl ? <img src={req.from.avatarUrl} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : req.from?.displayName?.[0] || '?'}
                   </div>
                   <div style={{ flex: 1, cursor: 'pointer' }}>
@@ -133,8 +133,8 @@ export default function FansPage() {
               const isBusy = busy === u.id || busy === u.clerkId;
               return (
                 <div key={u.id} className="card" style={{ padding: 14, display: 'flex', alignItems: 'center', gap: 12, cursor: 'pointer' }} onClick={() => router.push(`/fans/${u.id}`)}>
-                  <div className="avatar" style={{ width: 50, height: 50, fontSize: 20, border: '2px solid #7b2fff44' }}>
-                    {u.avatarUrl ? <img src={u.avatarUrl} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }} /> : u.displayName?.[0] || '?'}
+                  <div style={{ width: 50, height: 50, borderRadius: '50%', overflow: 'hidden', flexShrink: 0, background: 'var(--bg3)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20, fontWeight: 800, color: 'var(--text2)' }}>
+                    {u.avatarUrl ? <img src={u.avatarUrl} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : u.displayName?.[0] || '?'}
                   </div>
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <p style={{ fontWeight: 800, fontSize: 15, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{u.displayName || u.username}</p>
