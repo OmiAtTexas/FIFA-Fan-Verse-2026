@@ -52,25 +52,3 @@ body {
 /* Layout */
 .page { min-height: 100vh; padding-bottom: 80px; }
 .inner { max-width: 480px; margin: 0 auto; padding: 16px; }
-
-/* Responsive layout */
-@media (min-width: 640px) {
-  .page { max-width: 600px; }
-  .inner { max-width: 600px; }
-  .app-header-inner { max-width: 600px; }
-  .bottom-nav { max-width: 600px; }
-}
-
-@media (min-width: 960px) {
-  .page { max-width: 860px; }
-  .inner { max-width: 860px; }
-  .app-header-inner { max-width: 860px; }
-  .bottom-nav { max-width: 860px; }
-}
-
-@media (min-width: 1280px) {
-  .page { max-width: 1080px; }
-  .inner { max-width: 1080px; }
-  .app-header-inner { max-width: 1080px; }
-  .bottom-nav { max-width: 1080px; }
-}
