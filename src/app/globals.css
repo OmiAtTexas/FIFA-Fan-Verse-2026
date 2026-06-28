@@ -52,6 +52,7 @@ body {
 /* Layout */
 .page { min-height: 100vh; padding-bottom: 80px; }
 .inner { max-width: 480px; margin: 0 auto; padding: 16px; }
+@media (min-width: 768px) { .inner { max-width: 100%; padding: 16px 32px; } }
 /* ─── RESPONSIVE ─── */
 @media (min-width: 768px) {
   .inner { max-width: 700px; }
@@ -92,3 +93,4 @@ body {
 }
 [data-theme="light"] .app-header { background: rgba(240, 244, 255, 0.97); }
 .app-header-inner { max-width: 480px; margin: 0 auto; padding: 12px 16px; }
+@media (min-width: 768px) { .app-header-inner { max-width: 100%; padding: 12px 32px; } }
