@@ -38,6 +38,7 @@ export default function MessagesPage() {
   };
 
   const deleteConv = async (convId: string) => {
+    if (!confirm('Delete this conversation? This cannot be undone and will remove all messages.')) return;
     await fetch(`${process.env.NEXT_PUBLIC_API_URL}/messages/conversations/${convId}`, { method: 'DELETE', headers: { 'x-user-id': userId || '' } });
     setConversations(cs => cs.filter(x => x.id !== convId));
     setMenuOpen(null);
