@@ -156,7 +156,7 @@ export default function EditProfilePage() {
 
       {/* Save Button */}
       <div style={{ position: 'fixed', bottom: 0, left: 0, right: 0, padding: '12px 16px', background: 'var(--bg)', borderTop: '1px solid var(--border)', zIndex: 50 }}>
-        <div style={{ maxWidth: 480, margin: '0 auto' }}>
+        <div style={{ maxWidth: '100%' }}>
           <button onClick={save} disabled={saving || saved} style={{ width: '100%', padding: '14px', borderRadius: 14, background: saved ? '#00e676' : '#e8003d', color: saved ? '#000' : 'white', fontWeight: 900, fontSize: 16, border: 'none', cursor: 'pointer', transition: 'all 0.2s' }}>
             {saved ? 'Saved!' : saving ? 'Saving...' : 'Save Changes'}
           </button>
