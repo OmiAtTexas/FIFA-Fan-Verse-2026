@@ -15,17 +15,12 @@ export default function ProfilePage() {
 
   const loadProfile = useCallback(() => {
     if (!user) return;
-    fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/me`, { 
-      headers: { 'x-user-id': user.id },
-      cache: 'no-store',
-    })
-      .then(r => r.json())
-      .then(data => { if (data) setProfile(data); });
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/me`, { headers: { 'x-user-id': user.id }, cache: 'no-store' })
+      .then(r => r.json()).then(data => { if (data) setProfile(data); });
   }, [user]);
 
   useEffect(() => {
     loadProfile();
-    // Refetch when tab becomes visible again (coming back from edit page)
     const onFocus = () => loadProfile();
     window.addEventListener('focus', onFocus);
     document.addEventListener('visibilitychange', () => { if (!document.hidden) loadProfile(); });
@@ -80,7 +75,7 @@ export default function ProfilePage() {
           <div style={{ marginBottom: 20 }}>
             <p className="section-label">Visiting</p>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
-              {profile.hostCities.map((c: string) => <span key={c} className="pill">📍 {c.replace(/_/g,' ').replace(/\b\w/g,(l:string)=>l.toUpperCase())}</span>)}
+              {profile.hostCities.map((c: string) => <span key={c} className="pill">📍 {c}</span>)}
             </div>
           </div>
         )}
