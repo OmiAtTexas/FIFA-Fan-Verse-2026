@@ -151,11 +151,7 @@ export default function FansPage() {
                         {isBusy ? '...' : 'Message'}
                       </button>
                     )}
-                    {u.followStatus === 'following' && (
-                      <button onClick={e => { e.stopPropagation(); unfollow(u.id); }} disabled={isBusy} style={{ padding: '8px 10px', borderRadius: 10, background: 'var(--bg3)', color: 'white', fontWeight: 700, border: '1px solid #ffffff33', cursor: 'pointer', fontSize: 12, opacity: isBusy ? 0.6 : 1 }}>
-                        {isBusy ? '...' : '✓ Following'}
-                      </button>
-                    )}
+
                     {u.followStatus === 'requested' && (
                       <button onClick={e => { e.stopPropagation(); cancelRequest(u.id); }} disabled={isBusy} style={{ padding: '8px 10px', borderRadius: 10, background: 'var(--bg3)', color: 'var(--text2)', fontWeight: 700, border: '1px solid var(--border)', cursor: 'pointer', fontSize: 12 }}>
                         Requested
