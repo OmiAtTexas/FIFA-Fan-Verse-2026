@@ -50,7 +50,7 @@ body {
 .fifa-font { font-family: 'Bebas Neue', sans-serif; letter-spacing: 2px; }
 
 /* Layout */
-.page { min-height: 100vh; padding-bottom: 80px; }
+.page { min-height: 100vh; padding-bottom: 80px; animation: page-enter 0.25s ease forwards; }
 .inner { max-width: 480px; margin: 0 auto; padding: 16px; }
 @media (min-width: 768px) { .inner { max-width: 100%; padding: 16px 32px; } }
 /* ─── RESPONSIVE ─── */
