@@ -131,3 +131,19 @@ nav a { transition: all 0.2s ease; }
 .pill:hover { opacity: 0.85; }
 .avatar { transition: transform 0.15s ease; }
 .avatar:hover { transform: scale(1.05); }
+
+/* ─── VIEW TRANSITIONS ─── */
+::view-transition-old(root) {
+  animation: 180ms ease-out fade-out;
+}
+::view-transition-new(root) {
+  animation: 220ms ease-in fade-in;
+}
+@keyframes fade-out {
+  from { opacity: 1; transform: translateY(0); }
+  to { opacity: 0; transform: translateY(-6px); }
+}
+@keyframes fade-in {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
