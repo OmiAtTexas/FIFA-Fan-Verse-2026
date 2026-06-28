@@ -1,3 +1,4 @@
+import { PageTransition } from '@/components/ui/PageTransition';
 import type { Metadata, Viewport } from 'next';
 import { ClerkProvider } from '@clerk/nextjs';
 import { ThemeProvider } from '@/lib/theme';

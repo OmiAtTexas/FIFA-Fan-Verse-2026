@@ -118,3 +118,16 @@ body {
   -webkit-text-fill-color: var(--text) !important;
 }
 select.input { cursor: pointer; }
+
+/* ─── SMOOTH TRANSITIONS ─── */
+a, button { transition: opacity 0.15s ease, transform 0.15s ease, background 0.15s ease, color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease; }
+button:active { transform: scale(0.96); }
+a:active { opacity: 0.7; }
+.card { transition: all 0.2s ease; }
+.card:hover { transform: translateY(-2px); box-shadow: 0 4px 20px rgba(0,0,0,0.3); }
+.card:active { transform: scale(0.98); }
+nav a { transition: all 0.2s ease; }
+.pill { transition: all 0.15s ease; }
+.pill:hover { opacity: 0.85; }
+.avatar { transition: transform 0.15s ease; }
+.avatar:hover { transform: scale(1.05); }
