@@ -9,6 +9,7 @@ export default function MessagesPage() {
   const [conversations, setConversations] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [readMap, setReadMap] = useState<{[key: string]: string}>({});
+  const [menuOpen, setMenuOpen] = useState<string | null>(null);
 
   const load = () => {
     if (!userId) return;
@@ -34,6 +35,12 @@ export default function MessagesPage() {
     setReadMap(updated);
     localStorage.setItem('dm_read_map', JSON.stringify(updated));
     localStorage.setItem('dm_last_seen', Date.now().toString());
+  };
+
+  const deleteConv = async (convId: string) => {
+    await fetch(`${process.env.NEXT_PUBLIC_API_URL}/messages/conversations/${convId}`, { method: 'DELETE', headers: { 'x-user-id': userId || '' } });
+    setConversations(cs => cs.filter(x => x.id !== convId));
+    setMenuOpen(null);
   };
 
   const isUnread = (conv: any) => {
@@ -90,6 +97,14 @@ export default function MessagesPage() {
                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 6, flexShrink: 0 }}>
                   {c.lastMessageAt && <p style={{ fontSize: 10, color: unread ? '#e8003d' : 'var(--text3)', fontWeight: unread ? 700 : 400 }}>{new Date(c.lastMessageAt).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}</p>}
                   {unread && <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#e8003d' }} />}
+                  <div style={{ position: 'relative' }} onClick={e => e.preventDefault()}>
+                    <button onClick={e => { e.preventDefault(); e.stopPropagation(); setMenuOpen(menuOpen === c.id ? null : c.id); }} style={{ background: 'none', border: 'none', color: 'var(--text3)', cursor: 'pointer', fontSize: 18, padding: '2px 6px', lineHeight: 1 }}>⋯</button>
+                    {menuOpen === c.id && (
+                      <div onClick={e => e.preventDefault()} style={{ position: 'absolute', right: 0, bottom: '100%', background: 'var(--bg2)', border: '1px solid var(--border)', borderRadius: 12, padding: 8, zIndex: 100, minWidth: 140, boxShadow: '0 4px 20px rgba(0,0,0,0.4)' }}>
+                        <button onClick={() => deleteConv(c.id)} style={{ width: '100%', padding: '8px 12px', background: 'none', border: 'none', color: '#e8003d', fontWeight: 700, fontSize: 13, cursor: 'pointer', textAlign: 'left', borderRadius: 8 }}>Delete Chat</button>
+                      </div>
+                    )}
+                  </div>
                 </div>
               </a>
             );

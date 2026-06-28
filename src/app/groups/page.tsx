@@ -87,7 +87,7 @@ export default function GroupsPage() {
             <button onClick={() => setTab('city')} style={{ flex: 1, padding: '8px', borderRadius: 10, border: 'none', fontWeight: 700, fontSize: 13, cursor: 'pointer', background: tab === 'city' ? '#00e676' : 'var(--bg3)', color: tab === 'city' ? '#000' : 'var(--text2)' }}>City Groups</button>
             <button onClick={() => setTab('private')} style={{ flex: 1, padding: '8px', borderRadius: 10, border: 'none', fontWeight: 700, fontSize: 13, cursor: 'pointer', background: tab === 'private' ? '#00e676' : 'var(--bg3)', color: tab === 'private' ? '#000' : 'var(--text2)' }}>My Groups</button>
           </div>
-          <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search groups..." className="input" />
+          <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search groups..." className="input" style={{ width: '100%', boxSizing: 'border-box' }} />
         </div>
       </header>
 

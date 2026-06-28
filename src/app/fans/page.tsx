@@ -93,7 +93,7 @@ export default function FansPage() {
               Requests {followRequests.length > 0 && <span style={{ position: 'absolute', top: -6, right: -4, background: '#e8003d', color: 'white', fontSize: 9, fontWeight: 800, width: 16, height: 16, borderRadius: '50%', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>{followRequests.length}</span>}
             </button>
           </div>
-          {tab === 'discover' && <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search by name, country, team..." className="input" />}
+          {tab === 'discover' && <div style={{ width: '100%', marginBottom: 12 }}><input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search by name, country, team..." className="input" style={{ width: '100%', boxSizing: 'border-box' }} /></div>}
         </div>
       </header>
 
