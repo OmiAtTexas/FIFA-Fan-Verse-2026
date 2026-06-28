@@ -108,7 +108,7 @@ export default function GroupsPage() {
         </div>
       )}
 
-      <main style={{ maxWidth: 480, margin: '0 auto', padding: '16px', paddingBottom: 100 }}>
+      <main className="inner" style={{ paddingBottom: 100 }}>
         {tab === 'city' && (
           <div style={{ background: 'rgba(0,230,118,0.08)', border: '1px solid rgba(0,230,118,0.2)', borderRadius: 12, padding: '10px 14px', marginBottom: 14 }}>
             <p style={{ fontSize: 11, color: '#00e676', fontWeight: 700, marginBottom: 3 }}>Community Guidelines</p>

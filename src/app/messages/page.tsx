@@ -86,7 +86,7 @@ export default function MessagesPage() {
             return (
               <a key={c.id} href={`/messages/${c.id}`} onClick={() => markRead(c.id, c.lastMessageAt)} className="card" style={{ padding: '14px 16px', display: 'flex', alignItems: 'center', gap: 14, textDecoration: 'none', borderLeft: `3px solid ${unread ? '#e8003d' : '#00c2a8'}` }}>
                 <div style={{ position: 'relative', flexShrink: 0 }}>
-                  <div className="avatar" style={{ width: 50, height: 50, fontSize: 20, border: `2px solid ${unread ? '#e8003d44' : '#00c2a844'}` }}>
+                  <div className="avatar" style={{ width: 50, height: 50, borderRadius: '50%', fontSize: 20, border: `2px solid ${unread ? '#e8003d44' : '#00c2a844'}` }}>
                     {c.other?.avatarUrl ? <img src={c.other.avatarUrl} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : c.other?.displayName?.[0] || '?'}
                   </div>
                   {unread && <div style={{ position: 'absolute', bottom: 1, right: 1, width: 12, height: 12, borderRadius: '50%', background: '#e8003d', border: '2px solid var(--bg2)' }} />}
