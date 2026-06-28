@@ -60,8 +60,8 @@ export default function HomePage() {
   return (
     <div className="page">
       {/* Header */}
-      <header style={{ padding: '16px 20px 0', background: 'var(--bg)' }}>
-        <div style={{ maxWidth: 480, margin: '0 auto', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+      <header className="app-header">
+        <div className="app-header-inner" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <div>
             <p style={{ fontSize: 10, color: 'var(--text3)', letterSpacing: 3, fontWeight: 700, textTransform: 'uppercase' }}>FIFA World Cup 2026</p>
             <h1 style={{ fontSize: 26, fontWeight: 900, color: 'white', lineHeight: 1.1, marginTop: 2 }}>FanVerse</h1>
@@ -90,7 +90,7 @@ export default function HomePage() {
         </div>
       </header>
 
-      <main style={{ maxWidth: 480, margin: '0 auto', padding: '20px 16px 100px' }}>
+      <main className="inner" style={{ paddingBottom: 100 }}>
         {/* Hero welcome */}
         <div style={{ borderRadius: 24, overflow: 'hidden', marginBottom: 24, position: 'relative', background: 'linear-gradient(135deg, #0d0020 0%, #1a0035 50%, #0a1a2e 100%)', border: '1px solid rgba(123,47,255,0.2)' }}>
           <div style={{ position: 'absolute', top: -60, right: -60, width: 200, height: 200, borderRadius: '50%', background: 'radial-gradient(circle, rgba(232,0,61,0.2) 0%, transparent 70%)' }} />
