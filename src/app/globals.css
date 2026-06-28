@@ -52,6 +52,7 @@ body {
 /* Layout */
 .page { min-height: 100vh; padding-bottom: 80px; }
 .inner { max-width: 480px; margin: 0 auto; padding: 16px; }
+@media (min-width: 640px) { .inner { max-width: 100%; } }
 
 /* Header */
 .app-header {
@@ -66,6 +67,7 @@ body {
   background: rgba(240, 244, 255, 0.97);
 }
 .app-header-inner { max-width: 480px; margin: 0 auto; padding: 12px 16px; }
+@media (min-width: 640px) { .app-header-inner { max-width: 100%; } }
 
 /* Bottom Nav */
 .bottom-nav {
@@ -196,4 +198,18 @@ select.input { cursor: pointer; }
   padding: 4px 10px; border-radius: 8px;
   font-size: 11px; font-weight: 600;
   background: var(--bg3); color: var(--text2);
+}
+
+@media (min-width: 640px) {
+  .page { max-width: 640px; }
+}
+@media (min-width: 1024px) {
+  .page { max-width: 960px; }
+  .bottom-nav { max-width: 960px; left: 50%; transform: translateX(-50%); }
+  .app-header { max-width: 960px; left: 50%; transform: translateX(-50%); }
+}
+@media (min-width: 1280px) {
+  .page { max-width: 1200px; }
+  .bottom-nav { max-width: 1200px; }
+  .app-header { max-width: 1200px; }
 }
