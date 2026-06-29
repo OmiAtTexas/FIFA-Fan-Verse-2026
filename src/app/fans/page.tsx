@@ -19,7 +19,7 @@ export default function FansPage() {
     if (!userId) return;
     setLoading(true);
     const url = q && q.length >= 2 ? `${process.env.NEXT_PUBLIC_API_URL}/users/search?q=${q}` : `${process.env.NEXT_PUBLIC_API_URL}/users/suggestions`;
-    const res = await fetch(url, { headers: { 'x-user-id': userId } });
+    const res = await fetch(url, { headers: { 'x-user-id': userId }, cache: 'no-store' });
     const data = await res.json();
     setUsers(Array.isArray(data) ? data : []);
     setLoading(false);
@@ -52,6 +52,7 @@ export default function FansPage() {
     await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users/${targetId}/follow-request`, { method: 'POST', headers: { 'x-user-id': userId || '' } });
     setUsers(u => u.map(x => x.id === targetId ? { ...x, followStatus: 'requested' } : x));
     setBusy(null);
+    load();
   };
 
   const unfollow = async (targetId: string) => {
