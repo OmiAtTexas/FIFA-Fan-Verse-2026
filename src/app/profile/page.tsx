@@ -1,26 +1,36 @@
 'use client';
 
-import { useUser, useClerk, useAuth } from '@clerk/nextjs';
-import { useEffect, useState } from 'react';
+import { useUser, useClerk } from '@clerk/nextjs';
+import { useEffect, useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTheme } from '@/lib/theme';
 import { BottomNav } from '@/components/ui/BottomNav';
 
 export default function ProfilePage() {
   const { user } = useUser();
-  const { userId } = useAuth();
   const { signOut } = useClerk();
   const router = useRouter();
   const { theme, toggle } = useTheme();
   const [profile, setProfile] = useState<any>(null);
 
-  useEffect(() => {
-    if (!userId) return;
-    fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/me`, {
-      headers: { 'x-user-id': userId },
+  const loadProfile = useCallback(() => {
+    if (!user) return;
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/me`, { 
+      headers: { 'x-user-id': user.id },
       cache: 'no-store',
-    }).then(r => r.json()).then(data => { if (data) setProfile(data); });
-  }, [userId]);
+    })
+      .then(r => r.json())
+      .then(data => { if (data) setProfile(data); });
+  }, [user]);
+
+  useEffect(() => {
+    loadProfile();
+    // Refetch when tab becomes visible again (coming back from edit page)
+    const onFocus = () => loadProfile();
+    window.addEventListener('focus', onFocus);
+    document.addEventListener('visibilitychange', () => { if (!document.hidden) loadProfile(); });
+    return () => window.removeEventListener('focus', onFocus);
+  }, [loadProfile]);
 
   return (
     <div className="page">
@@ -38,20 +48,20 @@ export default function ProfilePage() {
           <div style={{ width: 90, height: 90, borderRadius: '50%', border: '3px solid #7b2fff', margin: '0 auto 14px', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--bg3)', fontSize: 36, fontWeight: 800, color: '#7b2fff' }}>
             {user?.imageUrl ? <img src={user.imageUrl} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : user?.firstName?.[0] || '?'}
           </div>
-          <h2 style={{ fontSize: 22, fontWeight: 900, marginBottom: 6 }}>{profile?.displayName || user?.firstName}</h2>
+          <h2 style={{ fontSize: 22, fontWeight: 900, marginBottom: 6 }}>{profile?.displayName || `${user?.firstName || ''} ${user?.lastName || ''}`.trim()}</h2>
           <div style={{ display: 'flex', justifyContent: 'center', gap: 12, flexWrap: 'wrap', marginBottom: 8 }}>
             {profile?.nationality && <span style={{ fontSize: 13, color: 'var(--text2)' }}>🌍 {profile.nationality}</span>}
             {profile?.supportedTeam && <span style={{ fontSize: 13, color: '#7b2fff', fontWeight: 700 }}>⚽ {profile.supportedTeam}</span>}
           </div>
-          {profile?.bio && <p style={{ fontSize: 14, color: 'var(--text2)', lineHeight: 1.5, marginBottom: 16 }}>{profile.bio}</p>}
-          <div style={{ display: 'flex', justifyContent: 'center', gap: 40, marginTop: 8 }}>
+          {profile?.bio && <p style={{ fontSize: 14, color: 'var(--text2)', lineHeight: 1.5, marginBottom: 12 }}>{profile.bio}</p>}
+          <div style={{ display: 'flex', justifyContent: 'center', gap: 32, marginTop: 12 }}>
             <div style={{ textAlign: 'center', cursor: 'pointer' }} onClick={() => profile?.id && router.push(`/fans/${profile.id}/followers`)}>
-              <p style={{ fontSize: 24, fontWeight: 900, color: 'white' }}>{profile?._count?.followers ?? 0}</p>
+              <p style={{ fontSize: 22, fontWeight: 900, color: 'white' }}>{profile?._count?.followers || 0}</p>
               <p style={{ fontSize: 11, color: 'var(--text3)', letterSpacing: 1 }}>FOLLOWERS</p>
             </div>
             <div style={{ width: 1, background: 'var(--border)' }} />
             <div style={{ textAlign: 'center', cursor: 'pointer' }} onClick={() => profile?.id && router.push(`/fans/${profile.id}/following`)}>
-              <p style={{ fontSize: 24, fontWeight: 900, color: 'white' }}>{profile?._count?.following ?? 0}</p>
+              <p style={{ fontSize: 22, fontWeight: 900, color: 'white' }}>{profile?._count?.following || 0}</p>
               <p style={{ fontSize: 11, color: 'var(--text3)', letterSpacing: 1 }}>FOLLOWING</p>
             </div>
           </div>
@@ -70,7 +80,7 @@ export default function ProfilePage() {
           <div style={{ marginBottom: 20 }}>
             <p className="section-label">Visiting</p>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
-              {profile.hostCities.map((c: string) => <span key={c} className="pill">📍 {c}</span>)}
+              {profile.hostCities.map((c: string) => <span key={c} className="pill">📍 {c.replace(/_/g,' ').replace(/\b\w/g,(l:string)=>l.toUpperCase())}</span>)}
             </div>
           </div>
         )}

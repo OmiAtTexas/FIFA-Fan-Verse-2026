@@ -46,7 +46,9 @@ export default function EditProfilePage() {
 
   const save = async () => {
     setSaving(true);
-    if (photoFile) await user?.setProfileImage({ file: photoFile });
+    if (photoFile) {
+      await user?.setProfileImage({ file: photoFile });
+    }
     await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users/me`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json', 'x-user-id': user?.id || '' },
@@ -64,16 +66,17 @@ export default function EditProfilePage() {
       <header className="app-header">
         <div className="app-header-inner" style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
           <button onClick={() => router.back()} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 20, color: '#7b2fff', padding: 0 }}>←</button>
-          <h1 className="fifa-font" style={{ fontSize: 24, color: '#e8003d' }}>EDIT PROFILE</h1>
+          <h1 className="fifa-font" style={{ fontSize: 24, color: '#7b2fff' }}>EDIT PROFILE</h1>
         </div>
       </header>
 
       <main className="inner" style={{ paddingBottom: 100 }}>
+        {/* Photo */}
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: 24 }}>
           <div onClick={() => fileRef.current?.click()} style={{ width: 90, height: 90, borderRadius: '50%', border: '3px solid #7b2fff', overflow: 'hidden', cursor: 'pointer', position: 'relative', marginBottom: 10 }}>
             <img src={photo || user?.imageUrl || ''} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
             <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+              <span style={{ fontSize: 20 }}>📷</span>
             </div>
           </div>
           <button onClick={() => fileRef.current?.click()} style={{ background: 'none', border: '1px solid rgba(123,47,255,0.3)', color: '#7b2fff', padding: '6px 16px', borderRadius: 99, fontSize: 12, fontWeight: 700, cursor: 'pointer' }}>Change Photo</button>
