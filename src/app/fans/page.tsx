@@ -33,7 +33,16 @@ export default function FansPage() {
   };
 
   useEffect(() => {
-    if (userId) { load(); loadRequests(); const i = setInterval(loadRequests, 10000); return () => clearInterval(i); }
+    if (userId) {
+      load();
+      loadRequests();
+      const i = setInterval(loadRequests, 10000);
+      // Re-fetch when user returns to this page
+      const onFocus = () => { load(); loadRequests(); };
+      window.addEventListener('focus', onFocus);
+      document.addEventListener('visibilitychange', () => { if (!document.hidden) { load(); loadRequests(); } });
+      return () => { clearInterval(i); window.removeEventListener('focus', onFocus); };
+    }
   }, [userId]);
 
   useEffect(() => { const t = setTimeout(() => { if (userId) load(search); }, 400); return () => clearTimeout(t); }, [search]);
